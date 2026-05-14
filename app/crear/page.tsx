@@ -2,18 +2,22 @@
 
 import { useReducer, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { LocationSelect } from "@/components/form/LocationSelect";
+import { HABILIDADES_TIC, CATEGORIAS } from "@/lib/habilidades";
+import { Step3Formacion } from "@/components/form/Step3Formacion";
 
 /* ─── Types ─── */
 type Habilidad = { nombre: string; nivel: number };
 type Proyecto = { titulo: string; descripcion: string; tag: string; enlace: string };
-type Formacion = { titulo: string; institucion: string; periodo: string; descripcion: string; urlCert: string };
+type Formacion = { id: string; programa: string; institucion: string; nivel: string; anioInicio: string; anioFin: string; urlCert: string };
 type Experiencia = { cargo: string; empresa: string; periodo: string; descripcion: string; tipo: string };
 
 type State = {
   nombre: string;
   apellido: string;
   cargo: string;
-  region: string;
+  departamento: string;
+  municipio: string;
   email: string;
   telefono: string;
   foto: string;
@@ -30,7 +34,7 @@ type Action =
   | { type: "RESET" };
 
 const INITIAL: State = {
-  nombre: "", apellido: "", cargo: "", region: "", email: "",
+  nombre: "", apellido: "", cargo: "", departamento: "", municipio: "", email: "",
   telefono: "", foto: "", frase: "", modalidad: "",
   habilidades: [], proyectos: [], formacion: [], experiencia: [],
 };
@@ -84,8 +88,6 @@ const STEPS = [
 ];
 
 const LEVELS = ["Sé poco", "Básico", "Intermedio", "Avanzado", "Experto"];
-const SUGGESTED = ["HTML", "CSS", "JavaScript", "React", "Python", "SQL", "Excel", "Figma", "Canva", "Git", "WordPress", "Office 365"];
-const REGIONS = ["Bogotá D.C.", "Antioquia", "Valle del Cauca", "Atlántico", "Santander", "Cundinamarca", "Bolívar", "Nariño", "Córdoba", "Tolima", "Otra"];
 const TIPO_EXP = [
   { v: "formal", l: "Empleo formal" },
   { v: "informal", l: "Trabajo informal" },
@@ -113,13 +115,11 @@ function Step1({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
         <label className="text-xs font-medium text-ink-700 mb-1 block">Cargo / Rol *</label>
         <input className="field" value={state.cargo} onChange={f("cargo")} placeholder="Desarrolladora Front-end Junior" />
       </div>
-      <div>
-        <label className="text-xs font-medium text-ink-700 mb-1 block">Región *</label>
-        <select className="field" value={state.region} onChange={f("region")}>
-          <option value="">Selecciona...</option>
-          {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
-      </div>
+      <LocationSelect
+        departamento={state.departamento}
+        municipio={state.municipio}
+        onChange={(field, value) => dispatch({ type: "SET", payload: { [field]: value } })}
+      />
       <div>
         <label className="text-xs font-medium text-ink-700 mb-1 block">Correo electrónico *</label>
         <input className="field" type="email" value={state.email} onChange={f("email")} placeholder="laura@correo.co" />
@@ -147,6 +147,7 @@ function Step1({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
 
 function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Action> }) {
   const [search, setSearch] = useState("");
+  const [categoria, setCategoria] = useState("Todas");
   const selected = new Set(state.habilidades.map(h => h.nombre));
 
   const toggle = (nombre: string) => {
@@ -168,8 +169,14 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
     setSearch("");
   };
 
+  const visibles = HABILIDADES_TIC.filter(h => {
+    const matchCat = categoria === "Todas" ? h.sugerida : h.categoria === categoria;
+    const matchSearch = !search || h.nombre.toLowerCase().includes(search.toLowerCase());
+    return matchSearch && (search ? true : matchCat);
+  });
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="relative">
         <input className="field pr-20" value={search} onChange={e => setSearch(e.target.value)}
           onKeyDown={e => e.key === "Enter" && addCustom()}
@@ -177,17 +184,39 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
         <button onClick={addCustom} className="absolute right-1.5 top-1.5 h-8 px-3 rounded-[6px] bg-brand-600 text-white text-xs font-medium">Agregar</button>
       </div>
 
+      {/* Tabs de categoría */}
+      <div className="flex gap-1.5 flex-wrap">
+        {["Todas", ...CATEGORIAS].map(cat => (
+          <button
+            key={cat}
+            onClick={() => setCategoria(cat)}
+            className={`h-7 px-3 rounded-full text-[11px] font-medium transition-colors ${
+              categoria === cat
+                ? "bg-brand-600 text-white"
+                : "bg-ink-100 text-ink-600 hover:bg-ink-200"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
       <div>
-        <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-2">Sugerencias frecuentes</div>
+        <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-2">
+          {search ? `Resultados para "${search}"` : categoria === "Todas" ? "Habilidades sugeridas" : categoria}
+        </div>
         <div className="flex flex-wrap gap-2">
-          {SUGGESTED.filter(s => !search || s.toLowerCase().includes(search.toLowerCase())).map(t => (
-            <button key={t} onClick={() => toggle(t)}
+          {visibles.map(h => (
+            <button key={h.nombre} onClick={() => toggle(h.nombre)}
               className={`h-9 px-3.5 rounded-full text-sm font-medium inline-flex items-center gap-1.5 border transition-colors ${
-                selected.has(t) ? "bg-brand-600 text-white border-brand-600" : "bg-white text-ink-700 border-ink-200 hover:border-ink-300"
+                selected.has(h.nombre) ? "bg-brand-600 text-white border-brand-600" : "bg-white text-ink-700 border-ink-200 hover:border-ink-300"
               }`}>
-              {selected.has(t) && <Check />} {t}
+              {selected.has(h.nombre) && <Check />} {h.nombre}
             </button>
           ))}
+          {visibles.length === 0 && (
+            <p className="text-sm text-ink-400">Sin resultados. Usa "Agregar" para añadirla.</p>
+          )}
         </div>
       </div>
 
@@ -226,32 +255,6 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
   );
 }
 
-function Step3({ state, dispatch }: { state: State; dispatch: React.Dispatch<Action> }) {
-  const add = () => dispatch({ type: "SET", payload: { formacion: [...state.formacion, { titulo: "", institucion: "", periodo: "", descripcion: "", urlCert: "" }] } });
-  const remove = (i: number) => dispatch({ type: "SET", payload: { formacion: state.formacion.filter((_, idx) => idx !== i) } });
-  const update = (i: number, k: keyof Formacion, v: string) => {
-    const next = state.formacion.map((f, idx) => idx === i ? { ...f, [k]: v } : f);
-    dispatch({ type: "SET", payload: { formacion: next } });
-  };
-  return (
-    <div className="space-y-4">
-      {state.formacion.map((f, i) => (
-        <div key={i} className="card p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-medium text-ink-700">Formación {i + 1}</div>
-            <button onClick={() => remove(i)} className="text-ink-400 hover:text-red-500"><Trash /></button>
-          </div>
-          <input className="field" value={f.titulo} onChange={e => update(i, "titulo", e.target.value)} placeholder="Nombre del programa o carrera" />
-          <input className="field" value={f.institucion} onChange={e => update(i, "institucion", e.target.value)} placeholder="Institución (ej: SENA, Universidad...)" />
-          <input className="field" value={f.periodo} onChange={e => update(i, "periodo", e.target.value)} placeholder="Período (ej: 2023 — 2024)" />
-          <textarea className="field h-20 py-2 resize-none" value={f.descripcion} onChange={e => update(i, "descripcion", e.target.value)} placeholder="Descripción breve (opcional)" />
-          <input className="field" value={f.urlCert} onChange={e => update(i, "urlCert", e.target.value)} placeholder="URL certificado (opcional)" />
-        </div>
-      ))}
-      <button onClick={add} className="btn-outline w-full gap-2"><Plus /> Agregar formación</button>
-    </div>
-  );
-}
 
 function Step4({ state, dispatch }: { state: State; dispatch: React.Dispatch<Action> }) {
   const add = () => {
@@ -333,7 +336,7 @@ function Step6({ state }: { state: State }) {
           <div>
             <div className="font-semibold text-base">{name || "—"}</div>
             <div className="text-sm text-ink-500">{state.cargo || "—"}</div>
-            <div className="text-xs text-ink-400">{state.region} · {state.email}</div>
+            <div className="text-xs text-ink-400">{state.municipio && state.departamento ? `${state.municipio}, ${state.departamento}` : ""} · {state.email}</div>
           </div>
         </div>
         {state.frase && <p className="text-sm text-ink-700 leading-relaxed border-t border-ink-100 pt-3">{state.frase}</p>}
@@ -383,7 +386,7 @@ export default function CrearPage() {
   const pct = (step / STEPS.length) * 100;
 
   const canAdvance = () => {
-    if (step === 1) return state.nombre && state.cargo && state.region && state.email;
+    if (step === 1) return state.nombre && state.cargo && state.departamento && state.municipio && state.email;
     return true;
   };
 
@@ -451,7 +454,7 @@ export default function CrearPage() {
       </header>
 
       {/* Body */}
-      <main className="flex-1 overflow-y-auto px-5 py-6 max-w-lg mx-auto w-full">
+      <main className={`flex-1 overflow-y-auto py-6 mx-auto w-full ${step === 3 ? "px-4 max-w-3xl" : "px-5 max-w-lg"}`}>
         <div className="text-xs font-medium uppercase tracking-wider text-brand-700">Paso {step}</div>
         <h1 className="mt-1 text-[24px] leading-tight font-semibold">
           {step === 1 && "Información personal"}
@@ -467,7 +470,12 @@ export default function CrearPage() {
         <div className="mt-5">
           {step === 1 && <Step1 state={state} dispatch={dispatch} />}
           {step === 2 && <Step2 state={state} dispatch={dispatch} />}
-          {step === 3 && <Step3 state={state} dispatch={dispatch} />}
+          {step === 3 && (
+            <Step3Formacion
+              formaciones={state.formacion}
+              onChange={(f) => dispatch({ type: "SET", payload: { formacion: f } })}
+            />
+          )}
           {step === 4 && <Step4 state={state} dispatch={dispatch} />}
           {step === 5 && <Step5 state={state} dispatch={dispatch} />}
           {step === 6 && <Step6 state={state} />}

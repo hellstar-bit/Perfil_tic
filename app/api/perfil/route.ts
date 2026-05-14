@@ -16,11 +16,13 @@ const proyectoSchema = z.object({
 });
 
 const formacionSchema = z.object({
-  titulo: z.string().min(1),
+  id: z.string().optional(),
+  programa: z.string().min(1),
   institucion: z.string().min(1),
-  periodo: z.string().min(1),
-  descripcion: z.string().optional(),
-  urlCert: z.string().url().optional().or(z.literal("")),
+  nivel: z.string().min(1),
+  anioInicio: z.string().min(1),
+  anioFin: z.string().min(1),
+  urlCert: z.string().optional(),
 });
 
 const experienciaSchema = z.object({
@@ -35,7 +37,8 @@ const perfilSchema = z.object({
   nombre: z.string().min(1),
   apellido: z.string().optional(),
   cargo: z.string().min(1),
-  region: z.string().min(1),
+  departamento: z.string().min(1),
+  municipio: z.string().min(1),
   email: z.string().email(),
   telefono: z.string().optional(),
   foto: z.string().optional(),
@@ -80,7 +83,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { nombre, apellido, cargo, region, email, telefono, foto, frase, modalidad, habilidades, proyectos, formacion, experiencia } = parsed.data;
+    const { nombre, apellido, cargo, departamento, municipio, email, telefono, foto, frase, modalidad, habilidades, proyectos, formacion, experiencia } = parsed.data;
     const fullName = apellido ? `${nombre} ${apellido}` : nombre;
     const slugBase = toSlug(fullName);
     const slug = await uniqueSlug(slugBase);
@@ -92,7 +95,8 @@ export async function POST(request: NextRequest) {
           slug,
           nombre: fullName,
           cargo,
-          region,
+          departamento,
+          municipio,
           email,
           telefono,
           foto,
@@ -120,7 +124,11 @@ export async function POST(request: NextRequest) {
       if (formacion.length > 0) {
         await tx.formacion.createMany({
           data: formacion.map((f) => ({
-            ...f,
+            programa: f.programa,
+            institucion: f.institucion,
+            nivel: f.nivel,
+            anioInicio: f.anioInicio,
+            anioFin: f.anioFin,
             urlCert: f.urlCert || null,
             perfilId: p.id,
           })),

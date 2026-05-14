@@ -100,15 +100,19 @@
    Component utilities (composables, no CSS-in-JS)
    ============================================================ */
 @layer components {
-  .btn {
+  .btn,
+  .btn-primary,
+  .btn-accent,
+  .btn-ghost,
+  .btn-outline {
     @apply inline-flex items-center justify-center gap-2 font-medium
            text-sm h-11 px-5 rounded-[var(--radius-button)]
            transition-colors select-none;
   }
-  .btn-primary  { @apply btn bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800; }
-  .btn-accent   { @apply btn bg-brand-500 text-white hover:bg-brand-600; }
-  .btn-ghost    { @apply btn bg-transparent text-ink-700 hover:bg-ink-100; }
-  .btn-outline  { @apply btn border border-ink-200 text-ink-700 hover:bg-ink-50; }
+  .btn-primary  { @apply bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800; }
+  .btn-accent   { @apply bg-brand-500 text-white hover:bg-brand-600; }
+  .btn-ghost    { @apply bg-transparent text-ink-700 hover:bg-ink-100; }
+  .btn-outline  { @apply border border-ink-200 text-ink-700 hover:bg-ink-50; }
 
   .field {
     @apply w-full h-11 px-3 rounded-[var(--radius-input)]

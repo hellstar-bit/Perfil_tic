@@ -202,7 +202,8 @@ const LEVELS = ["Sé poco", "Básico", "Intermedio", "Avanzado", "Experto"];
 type PerfilData = {
   nombre: string;
   cargo: string;
-  region: string;
+  departamento: string;
+  municipio: string;
   email: string;
   telefono?: string | null;
   frase?: string | null;
@@ -210,7 +211,7 @@ type PerfilData = {
   slug: string;
   habilidades: { nombre: string; nivel: number }[];
   proyectos: { titulo: string; descripcion: string; tag?: string | null }[];
-  formacion: { titulo: string; institucion: string; periodo: string; descripcion?: string | null }[];
+  formacion: { programa: string; institucion: string; nivel: string; anioInicio: string; anioFin: string }[];
   experiencia: { cargo: string; empresa: string; periodo: string; descripcion: string; tipo: string }[];
 };
 
@@ -236,7 +237,7 @@ export function CVDocument({ perfil }: { perfil: PerfilData }) {
               <Text style={s.headerName}>{perfil.nombre}</Text>
               <Text style={s.headerRole}>{perfil.cargo}</Text>
               <View style={s.headerMeta}>
-                <Text>{perfil.region}</Text>
+                <Text>{perfil.municipio}, {perfil.departamento}</Text>
                 <Text>{perfil.email}{perfil.telefono ? `  ·  ${perfil.telefono}` : ""}</Text>
                 <Text>perfiltic.co/{perfil.slug}</Text>
               </View>
@@ -293,11 +294,11 @@ export function CVDocument({ perfil }: { perfil: PerfilData }) {
               <Text style={s.sectionTitle}>Formación académica</Text>
               {perfil.formacion.map((f, i) => (
                 <View key={i} style={s.timelineRow}>
-                  <Text style={s.timelineYear}>{f.periodo}</Text>
+                  <Text style={s.timelineYear}>{f.anioInicio} — {f.anioFin}</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.timelineTitle}>{f.titulo}</Text>
+                    <Text style={s.timelineTitle}>{f.programa}</Text>
                     <Text style={s.timelineWhere}>{f.institucion}</Text>
-                    {f.descripcion && <Text style={s.timelineDesc}>{f.descripcion}</Text>}
+                    <Text style={s.timelineDesc}>{f.nivel}</Text>
                   </View>
                 </View>
               ))}

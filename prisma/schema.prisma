@@ -10,10 +10,11 @@ datasource db {
 model Perfil {
   id          String   @id @default(cuid())
   slug        String   @unique
-  nombre      String
-  cargo       String
-  region      String
-  email       String
+  nombre       String
+  cargo        String
+  departamento String @default("")
+  municipio    String @default("")
+  email        String
   telefono    String?
   foto        String?
   frase       String?
@@ -49,10 +50,11 @@ model Proyecto {
 model Formacion {
   id          String  @id @default(cuid())
   perfilId    String
-  titulo      String
+  programa    String
   institucion String
-  periodo     String
-  descripcion String?
+  nivel       String
+  anioInicio  String
+  anioFin     String
   urlCert     String?
   perfil      Perfil  @relation(fields: [perfilId], references: [id], onDelete: Cascade)
 }

@@ -79,7 +79,7 @@ function PerfilMobile({ perfil }: { perfil: NonNullable<Perfil> }) {
         </div>
         {perfil.frase && <p className="mt-4 text-[14px] text-ink-700 leading-relaxed">{perfil.frase}</p>}
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[12px] text-ink-500">
-          <span className="inline-flex items-center gap-1"><Pin /> {perfil.region}</span>
+          <span className="inline-flex items-center gap-1"><Pin /> {perfil.municipio}, {perfil.departamento}</span>
           <span className="inline-flex items-center gap-1"><Mail /> {perfil.email}</span>
           {perfil.telefono && <span className="inline-flex items-center gap-1"><Phone /> {perfil.telefono}</span>}
         </div>
@@ -127,10 +127,10 @@ function PerfilMobile({ perfil }: { perfil: NonNullable<Perfil> }) {
             {perfil.formacion.map((f: Formacion) => (
               <li key={f.id} className="relative">
                 <span className="absolute -left-[26px] top-1 h-3 w-3 rounded-full bg-white border-2 border-brand-500" />
-                <div className="text-[10px] font-mono text-ink-500">{f.periodo}</div>
-                <div className="font-semibold text-[14px] leading-tight mt-0.5">{f.titulo}</div>
+                <div className="text-[10px] font-mono text-ink-500">{f.anioInicio} — {f.anioFin}</div>
+                <div className="font-semibold text-[14px] leading-tight mt-0.5">{f.programa}</div>
                 <div className="text-[12px] text-ink-500">{f.institucion}</div>
-                {f.descripcion && <div className="text-[12px] text-ink-600 mt-1 leading-snug">{f.descripcion}</div>}
+                <div className="text-[11px] text-ink-400">{f.nivel}</div>
               </li>
             ))}
           </ol>
@@ -197,7 +197,7 @@ function PerfilDesktop({ perfil }: { perfil: NonNullable<Perfil> }) {
             <h1 className="mt-2 text-[40px] font-semibold leading-tight tracking-tight">{perfil.nombre}</h1>
             <div className="text-[16px] text-ink-500">{perfil.cargo}</div>
             <div className="mt-3 flex flex-wrap gap-4 text-[13px] text-ink-500">
-              <span className="inline-flex items-center gap-1.5"><Pin /> {perfil.region}</span>
+              <span className="inline-flex items-center gap-1.5"><Pin /> {perfil.municipio}, {perfil.departamento}</span>
               <span className="inline-flex items-center gap-1.5"><Mail /> {perfil.email}</span>
               {perfil.telefono && <span className="inline-flex items-center gap-1.5"><Phone /> {perfil.telefono}</span>}
             </div>
@@ -264,10 +264,10 @@ function PerfilDesktop({ perfil }: { perfil: NonNullable<Perfil> }) {
                 {perfil.formacion.map((f: Formacion) => (
                   <li key={f.id} className="relative">
                     <span className="absolute -left-[26px] top-1 h-3 w-3 rounded-full bg-white border-2 border-brand-500" />
-                    <div className="text-[10px] font-mono text-ink-500">{f.periodo}</div>
-                    <div className="font-semibold text-[14px] leading-tight mt-0.5">{f.titulo}</div>
+                    <div className="text-[10px] font-mono text-ink-500">{f.anioInicio} — {f.anioFin}</div>
+                    <div className="font-semibold text-[14px] leading-tight mt-0.5">{f.programa}</div>
                     <div className="text-[12px] text-ink-500">{f.institucion}</div>
-                    {f.descripcion && <div className="text-[12px] text-ink-600 mt-1 leading-snug">{f.descripcion}</div>}
+                    <div className="text-[11px] text-ink-400">{f.nivel}</div>
                   </li>
                 ))}
               </ol>
