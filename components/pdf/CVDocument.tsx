@@ -1,205 +1,261 @@
-import {
-  Document,
-  Page,
-  View,
-  Text,
-  StyleSheet,
-} from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 
-const PRIMARY = "#0f6e56";
-const TEXT = "#15130f";
-const MUTED = "#57514a";
-const BORDER = "#e6e2db";
-const SURFACE = "#faf9f7";
-const BRAND_LIGHT = "#ecf7f2";
-const BRAND_MID = "#1d9e75";
+/* ─── Tokens ─── */
+const C = {
+  primary:   "#0f6e56",
+  brand:     "#1d9e75",
+  brandLight:"#ecf7f2",
+  text:      "#15130f",
+  muted:     "#57514a",
+  border:    "#e6e2db",
+  white:     "#ffffff",
+  whiteA75:  "rgba(255,255,255,0.75)",
+  whiteA60:  "rgba(255,255,255,0.60)",
+  whiteA50:  "rgba(255,255,255,0.50)",
+  whiteA20:  "rgba(255,255,255,0.20)",
+  whiteA15:  "rgba(255,255,255,0.15)",
+  whiteA85:  "rgba(255,255,255,0.85)",
+};
 
-const s = StyleSheet.create({
+const styles = StyleSheet.create({
   page: {
+    flexDirection: "row",
     fontFamily: "Helvetica",
     fontSize: 9,
-    color: TEXT,
-    flexDirection: "row",
   },
-  left: {
-    width: "30%",
-    backgroundColor: SURFACE,
+
+  /* ── Sidebar ── */
+  sidebar: {
+    width: "32%",
+    backgroundColor: C.primary,
     padding: 20,
-    gap: 16,
-  },
-  right: {
-    width: "70%",
-    padding: 20,
-    gap: 16,
-  },
-  header: {
-    backgroundColor: PRIMARY,
-    padding: "20 24",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
+    color: C.white,
   },
   avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: BRAND_MID,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: C.brand,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 12,
   },
   avatarText: {
-    color: "white",
-    fontSize: 18,
+    color: C.white,
+    fontSize: 22,
     fontFamily: "Helvetica-Bold",
   },
-  headerName: {
-    color: "white",
-    fontSize: 20,
+  nombre: {
+    fontSize: 14,
     fontFamily: "Helvetica-Bold",
-    letterSpacing: -0.3,
+    color: C.white,
+    lineHeight: 1.2,
+    marginBottom: 3,
   },
-  headerRole: {
-    color: "#d2ede2",
-    fontSize: 10,
-    marginTop: 2,
+  cargo: {
+    fontSize: 9,
+    color: C.whiteA75,
+    marginBottom: 14,
   },
-  headerMeta: {
-    color: "#ecf7f2",
-    fontSize: 8,
-    marginTop: 6,
-    gap: 3,
-  },
-  sectionTitle: {
+
+  sideHeader: {
     fontSize: 7,
     fontFamily: "Helvetica-Bold",
-    color: PRIMARY,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    borderBottomWidth: 1,
-    borderBottomColor: BORDER,
+    color: C.whiteA50,
+    letterSpacing: 1.2,
+    borderBottomWidth: 0.5,
+    borderBottomColor: C.whiteA20,
     paddingBottom: 4,
     marginBottom: 8,
+    marginTop: 14,
   },
-  skillRow: {
+
+  contactRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  contactText: {
+    fontSize: 8,
+    color: C.whiteA85,
+  },
+
+  /* Skills */
+  skillItem: {
+    marginBottom: 8,
+  },
+  skillName: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: C.white,
+    marginBottom: 2,
+  },
+  skillLevel: {
+    fontSize: 7.5,
+    color: C.whiteA60,
+    marginBottom: 3,
+  },
+  skillBars: {
+    flexDirection: "row",
+  },
+  skillBar: {
+    height: 3,
+    flex: 1,
+    borderRadius: 2,
+  },
+  skillBarFill:  { backgroundColor: C.white },
+  skillBarEmpty: { backgroundColor: C.whiteA20 },
+
+  /* Disponibilidad chips */
+  chip: {
+    backgroundColor: C.whiteA15,
+    borderRadius: 4,
+    paddingLeft: 6,
+    paddingRight: 6,
+    paddingTop: 3,
+    paddingBottom: 3,
+    marginRight: 4,
+    marginBottom: 4,
+  },
+  chipText: {
+    fontSize: 8,
+    color: C.white,
+  },
+
+  /* Footer del sidebar */
+  footer: {
+    position: "absolute",
+    bottom: 14,
+    left: 20,
+    right: 20,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
+    borderTopWidth: 0.5,
+    borderTopColor: C.whiteA15,
+    paddingTop: 6,
   },
-  skillName: {
-    fontSize: 8,
-    fontFamily: "Helvetica-Bold",
-    color: TEXT,
-  },
-  skillLevel: {
+  footerText: {
     fontSize: 7,
-    color: MUTED,
+    color: C.whiteA50,
   },
-  barTrack: {
-    flexDirection: "row",
-    gap: 2,
-    marginTop: 2,
-  },
-  barFill: {
-    height: 3,
-    flex: 1,
-    borderRadius: 2,
-    backgroundColor: BRAND_MID,
-  },
-  barEmpty: {
-    height: 3,
-    flex: 1,
-    borderRadius: 2,
-    backgroundColor: BORDER,
-  },
-  chip: {
-    backgroundColor: BRAND_LIGHT,
-    paddingVertical: 2,
-    paddingHorizontal: 6,
-    borderRadius: 10,
+  footerBold: {
     fontSize: 7,
-    color: PRIMARY,
+    color: C.whiteA50,
     fontFamily: "Helvetica-Bold",
   },
-  timelineRow: {
+
+  /* ── Main ── */
+  main: {
+    width: "68%",
+    backgroundColor: C.white,
+    padding: 24,
+  },
+
+  mainHeader: {
+    fontSize: 7,
+    fontFamily: "Helvetica-Bold",
+    color: C.primary,
+    letterSpacing: 1.5,
+    borderBottomWidth: 1,
+    borderBottomColor: C.border,
+    paddingBottom: 4,
+    marginBottom: 10,
+    marginTop: 14,
+  },
+
+  frase: {
+    fontSize: 10,
+    color: "#3c3833",
+    lineHeight: 1.55,
+    marginBottom: 4,
+    fontStyle: "italic",
+  },
+
+  /* Timeline */
+  timelineItem: {
     flexDirection: "row",
-    gap: 10,
     marginBottom: 10,
   },
   timelineYear: {
-    fontSize: 7,
-    fontFamily: "Helvetica",
-    color: MUTED,
-    width: 64,
+    width: 72,
+    fontSize: 7.5,
+    fontFamily: "Helvetica-Bold",
+    color: C.primary,
     paddingTop: 1,
+    marginRight: 10,
+  },
+  timelineContent: {
+    flex: 1,
   },
   timelineTitle: {
-    fontSize: 9,
+    fontSize: 10,
     fontFamily: "Helvetica-Bold",
-    color: TEXT,
+    color: C.text,
+    marginBottom: 1,
   },
-  timelineWhere: {
-    fontSize: 8,
-    color: PRIMARY,
-    fontFamily: "Helvetica-Bold",
-    marginTop: 1,
+  timelineInst: {
+    fontSize: 8.5,
+    color: C.primary,
+    marginBottom: 2,
   },
   timelineDesc: {
     fontSize: 8,
-    color: MUTED,
-    marginTop: 2,
+    color: C.muted,
     lineHeight: 1.4,
   },
-  projectGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6,
-  },
-  projectCard: {
-    width: "47%",
+
+  /* Proyecto card */
+  proyectoCard: {
     borderWidth: 1,
-    borderColor: BORDER,
+    borderColor: C.border,
     borderRadius: 6,
     padding: 8,
+    marginBottom: 6,
   },
-  projectTitle: {
-    fontSize: 8,
-    fontFamily: "Helvetica-Bold",
-    color: TEXT,
+  proyectoHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 3,
   },
-  projectTag: {
-    fontSize: 6,
-    color: PRIMARY,
+  proyectoNombre: {
+    fontSize: 9.5,
     fontFamily: "Helvetica-Bold",
-    backgroundColor: BRAND_LIGHT,
-    paddingHorizontal: 4,
-    paddingVertical: 1,
+    color: C.text,
+  },
+  proyectoTipo: {
+    fontSize: 7.5,
+    color: C.primary,
+    backgroundColor: C.brandLight,
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingTop: 2,
+    paddingBottom: 2,
     borderRadius: 4,
   },
-  projectDesc: {
-    fontSize: 7,
-    color: MUTED,
-    marginTop: 3,
+  proyectoDesc: {
+    fontSize: 8,
+    color: C.muted,
     lineHeight: 1.4,
+    marginBottom: 4,
   },
-  footer: {
-    position: "absolute",
-    bottom: 12,
-    left: 24,
-    right: 24,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    fontSize: 7,
-    color: MUTED,
-    borderTopWidth: 1,
-    borderTopColor: BORDER,
-    paddingTop: 6,
+  proyectoTecs: {
+    fontSize: 7.5,
+    color: "#7a7368",
+  },
+  proyectoLink: {
+    fontSize: 7.5,
+    color: C.primary,
+    textDecoration: "underline",
+    marginTop: 2,
   },
 });
 
-const LEVELS = ["Sé poco", "Básico", "Intermedio", "Avanzado", "Experto"];
-
+/* ─── Types — matches Prisma include ─── */
 type PerfilData = {
+  id: string;
+  slug: string;
   nombre: string;
   cargo: string;
   departamento: string;
@@ -208,141 +264,223 @@ type PerfilData = {
   telefono?: string | null;
   frase?: string | null;
   modalidad?: string | null;
-  slug: string;
-  habilidades: { nombre: string; nivel: number }[];
-  proyectos: { titulo: string; descripcion: string; tag?: string | null }[];
-  formacion: { programa: string; institucion: string; nivel: string; anioInicio: string; anioFin: string }[];
-  experiencia: { cargo: string; empresa: string; periodo: string; descripcion: string; tipo: string }[];
+  disponible: boolean;
+  habilidades: { id: string; nombre: string; nivel: number }[];
+  proyectos: { id: string; titulo: string; descripcion: string; tag?: string | null; enlace?: string | null }[];
+  formacion: { id: string; programa: string; institucion: string; nivel: string; anioInicio: string; anioFin: string }[];
+  experiencia: { id: string; cargo: string; empresa: string; periodo: string; descripcion: string; tipo: string }[];
 };
 
+/* ─── Helpers ─── */
+const LEVELS = ["Sé poco", "Básico", "Intermedio", "Avanzado", "Experto"];
+
 function initials(name: string) {
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? "")
-    .join("");
+  return name.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
 }
 
+/* tag = "Académico, HTML, CSS" — first item is tipo, rest are techs */
+function parseTag(tag: string | null | undefined): { tipo: string; techs: string[] } {
+  const parts = (tag ?? "").split(", ").map((s) => s.trim()).filter(Boolean);
+  return { tipo: parts[0] ?? "", techs: parts.slice(1) };
+}
+
+/* ─── Sub-components ─── */
+function SkillBar({ nombre, nivel }: { nombre: string; nivel: number }) {
+  return (
+    <View style={styles.skillItem}>
+      <Text style={styles.skillName}>{nombre}</Text>
+      <Text style={styles.skillLevel}>{LEVELS[nivel - 1] ?? ""}</Text>
+      <View style={styles.skillBars}>
+        {[1, 2, 3, 4, 5].map((i, idx) => (
+          <View
+            key={i}
+            style={[
+              styles.skillBar,
+              i <= nivel ? styles.skillBarFill : styles.skillBarEmpty,
+              { marginRight: idx < 4 ? 2 : 0 },
+            ]}
+          />
+        ))}
+      </View>
+    </View>
+  );
+}
+
+function TimelineItem({
+  titulo, institucion, periodo, descripcion,
+}: {
+  titulo: string;
+  institucion?: string;
+  periodo: string;
+  descripcion?: string | null;
+}) {
+  return (
+    <View style={styles.timelineItem}>
+      <Text style={styles.timelineYear}>{periodo}</Text>
+      <View style={styles.timelineContent}>
+        <Text style={styles.timelineTitle}>{titulo}</Text>
+        {!!institucion && <Text style={styles.timelineInst}>{institucion}</Text>}
+        {!!descripcion && <Text style={styles.timelineDesc}>{descripcion}</Text>}
+      </View>
+    </View>
+  );
+}
+
+function ProyectoCard({
+  titulo, descripcion, tag, enlace,
+}: {
+  titulo: string;
+  descripcion: string;
+  tag?: string | null;
+  enlace?: string | null;
+}) {
+  const { tipo, techs } = parseTag(tag);
+  return (
+    <View style={styles.proyectoCard}>
+      <View style={styles.proyectoHeader}>
+        <Text style={styles.proyectoNombre}>{titulo}</Text>
+        {!!tipo && <Text style={styles.proyectoTipo}>{tipo}</Text>}
+      </View>
+      {!!descripcion && <Text style={styles.proyectoDesc}>{descripcion}</Text>}
+      {techs.length > 0 && (
+        <Text style={styles.proyectoTecs}>{techs.join(" · ")}</Text>
+      )}
+      {!!enlace && <Text style={styles.proyectoLink}>{enlace}</Text>}
+    </View>
+  );
+}
+
+/* ─── Main document ─── */
 export function CVDocument({ perfil }: { perfil: PerfilData }) {
+  const iniciales = initials(perfil.nombre);
+  const fraseVisible = perfil.frase && perfil.frase.trim() !== "";
+
   return (
     <Document>
-      <Page size="A4" style={s.page}>
-        {/* Header band — full width, placed as absolute so it doesn't affect the two-col layout */}
-        <View style={{ position: "absolute", top: 0, left: 0, right: 0 }}>
-          <View style={s.header}>
-            <View style={s.avatar}>
-              <Text style={s.avatarText}>{initials(perfil.nombre)}</Text>
+      <Page size="A4" style={styles.page}>
+
+        {/* ══ SIDEBAR ══ */}
+        <View style={styles.sidebar}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{iniciales}</Text>
+          </View>
+          <Text style={styles.nombre}>{perfil.nombre}</Text>
+          <Text style={styles.cargo}>{perfil.cargo}</Text>
+
+          {/* Contacto */}
+          <Text style={styles.sideHeader}>CONTACTO</Text>
+          <View style={styles.contactRow}>
+            <Text style={styles.contactText}>{perfil.email}</Text>
+          </View>
+          {!!perfil.telefono && (
+            <View style={styles.contactRow}>
+              <Text style={styles.contactText}>{perfil.telefono}</Text>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={s.headerName}>{perfil.nombre}</Text>
-              <Text style={s.headerRole}>{perfil.cargo}</Text>
-              <View style={s.headerMeta}>
-                <Text>{perfil.municipio}, {perfil.departamento}</Text>
-                <Text>{perfil.email}{perfil.telefono ? `  ·  ${perfil.telefono}` : ""}</Text>
-                <Text>perfiltic.co/{perfil.slug}</Text>
+          )}
+          <View style={styles.contactRow}>
+            <Text style={styles.contactText}>
+              {perfil.municipio}, {perfil.departamento}
+            </Text>
+          </View>
+
+          {/* Habilidades */}
+          {perfil.habilidades.length > 0 && (
+            <View>
+              <Text style={styles.sideHeader}>HABILIDADES</Text>
+              {perfil.habilidades.map((h) => (
+                <SkillBar key={h.id} nombre={h.nombre} nivel={h.nivel} />
+              ))}
+            </View>
+          )}
+
+          {/* Disponibilidad */}
+          <Text style={styles.sideHeader}>DISPONIBILIDAD</Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+            {perfil.disponible && (
+              <View style={styles.chip}>
+                <Text style={styles.chipText}>Disponible</Text>
               </View>
-            </View>
+            )}
+            {!!perfil.modalidad && (
+              <View style={styles.chip}>
+                <Text style={styles.chipText}>{perfil.modalidad}</Text>
+              </View>
+            )}
+            {!perfil.disponible && !perfil.modalidad && (
+              <View style={styles.chip}>
+                <Text style={styles.chipText}>No disponible</Text>
+              </View>
+            )}
+          </View>
+
+          {/* Footer del sidebar */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Generado por PerfilTIC</Text>
+            <Text style={styles.footerBold}>perfiltic.co/{perfil.slug}</Text>
           </View>
         </View>
 
-        {/* Spacer to push columns below header */}
-        <View style={{ width: "100%", height: 100 }} />
+        {/* ══ MAIN ══ */}
+        <View style={styles.main}>
 
-        {/* Left column */}
-        <View style={s.left}>
-          {perfil.frase && (
+          {/* Perfil / frase */}
+          {fraseVisible && (
             <View>
-              <Text style={s.sectionTitle}>Perfil</Text>
-              <Text style={{ fontSize: 8, color: MUTED, lineHeight: 1.5 }}>{perfil.frase}</Text>
+              <Text style={[styles.mainHeader, { marginTop: 0 }]}>PERFIL</Text>
+              <Text style={styles.frase}>{perfil.frase}</Text>
             </View>
           )}
 
-          {perfil.habilidades.length > 0 && (
-            <View>
-              <Text style={s.sectionTitle}>Habilidades</Text>
-              {perfil.habilidades.map((h, i) => (
-                <View key={i} style={{ marginBottom: 7 }}>
-                  <View style={s.skillRow}>
-                    <Text style={s.skillName}>{h.nombre}</Text>
-                    <Text style={s.skillLevel}>{LEVELS[h.nivel - 1]}</Text>
-                  </View>
-                  <View style={s.barTrack}>
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <View key={n} style={n <= h.nivel ? s.barFill : s.barEmpty} />
-                    ))}
-                  </View>
-                </View>
-              ))}
-            </View>
-          )}
-
-          {perfil.modalidad && (
-            <View>
-              <Text style={s.sectionTitle}>Disponibilidad</Text>
-              <View style={{ gap: 4 }}>
-                <Text style={{ fontSize: 8, color: MUTED }}>Disponible · Inmediata</Text>
-                <Text style={{ fontSize: 8, color: MUTED }}>{perfil.modalidad}</Text>
-              </View>
-            </View>
-          )}
-        </View>
-
-        {/* Right column */}
-        <View style={s.right}>
+          {/* Formación académica */}
           {perfil.formacion.length > 0 && (
             <View>
-              <Text style={s.sectionTitle}>Formación académica</Text>
-              {perfil.formacion.map((f, i) => (
-                <View key={i} style={s.timelineRow}>
-                  <Text style={s.timelineYear}>{f.anioInicio} — {f.anioFin}</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.timelineTitle}>{f.programa}</Text>
-                    <Text style={s.timelineWhere}>{f.institucion}</Text>
-                    <Text style={s.timelineDesc}>{f.nivel}</Text>
-                  </View>
-                </View>
+              <Text style={[styles.mainHeader, { marginTop: fraseVisible ? 14 : 0 }]}>
+                FORMACIÓN ACADÉMICA
+              </Text>
+              {perfil.formacion.map((f) => (
+                <TimelineItem
+                  key={f.id}
+                  titulo={f.programa}
+                  institucion={`${f.institucion} · ${f.nivel}`}
+                  periodo={`${f.anioInicio} — ${f.anioFin}`}
+                />
               ))}
             </View>
           )}
 
+          {/* Experiencia */}
           {perfil.experiencia.length > 0 && (
             <View>
-              <Text style={s.sectionTitle}>Experiencia laboral</Text>
-              {perfil.experiencia.map((e, i) => (
-                <View key={i} style={s.timelineRow}>
-                  <Text style={s.timelineYear}>{e.periodo}</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.timelineTitle}>{e.cargo}</Text>
-                    <Text style={s.timelineWhere}>{e.empresa}</Text>
-                    <Text style={s.timelineDesc}>{e.descripcion}</Text>
-                  </View>
-                </View>
+              <Text style={styles.mainHeader}>EXPERIENCIA</Text>
+              {perfil.experiencia.map((e) => (
+                <TimelineItem
+                  key={e.id}
+                  titulo={e.cargo}
+                  institucion={e.empresa}
+                  periodo={e.periodo}
+                  descripcion={e.descripcion}
+                />
               ))}
             </View>
           )}
 
+          {/* Proyectos */}
           {perfil.proyectos.length > 0 && (
             <View>
-              <Text style={s.sectionTitle}>Proyectos destacados</Text>
-              <View style={s.projectGrid}>
-                {perfil.proyectos.slice(0, 4).map((p, i) => (
-                  <View key={i} style={s.projectCard}>
-                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
-                      <Text style={s.projectTitle}>{p.titulo}</Text>
-                      {p.tag && <Text style={s.projectTag}>{p.tag}</Text>}
-                    </View>
-                    <Text style={s.projectDesc}>{p.descripcion}</Text>
-                  </View>
-                ))}
-              </View>
+              <Text style={styles.mainHeader}>PROYECTOS DESTACADOS</Text>
+              {perfil.proyectos.map((p) => (
+                <ProyectoCard
+                  key={p.id}
+                  titulo={p.titulo}
+                  descripcion={p.descripcion}
+                  tag={p.tag}
+                  enlace={p.enlace}
+                />
+              ))}
             </View>
           )}
         </View>
 
-        <View style={s.footer} fixed>
-          <Text>Generado por PerfilTIC · perfiltic.co/{perfil.slug}</Text>
-          <Text render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
-        </View>
       </Page>
     </Document>
   );
