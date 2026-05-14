@@ -4,13 +4,13 @@ import { useReducer, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LocationSelect } from "@/components/form/LocationSelect";
 import { HABILIDADES_TIC, CATEGORIAS } from "@/lib/habilidades";
-import { Step3Formacion } from "@/components/form/Step3Formacion";
+import { PasoFormacion } from "@/components/form/steps/PasoFormacion";
+import { PasoProyectos } from "@/components/form/steps/PasoProyectos";
+import { PasoExperiencia } from "@/components/form/steps/PasoExperiencia";
+import type { Formacion, Proyecto, Experiencia } from "@/types/perfil";
 
 /* ─── Types ─── */
 type Habilidad = { nombre: string; nivel: number };
-type Proyecto = { titulo: string; descripcion: string; tag: string; enlace: string };
-type Formacion = { id: string; programa: string; institucion: string; nivel: string; anioInicio: string; anioFin: string; urlCert: string };
-type Experiencia = { cargo: string; empresa: string; periodo: string; descripcion: string; tipo: string };
 
 type State = {
   nombre: string;
@@ -24,9 +24,9 @@ type State = {
   frase: string;
   modalidad: string;
   habilidades: Habilidad[];
+  formaciones: Formacion[];
   proyectos: Proyecto[];
-  formacion: Formacion[];
-  experiencia: Experiencia[];
+  experiencias: Experiencia[];
 };
 
 type Action =
@@ -36,7 +36,7 @@ type Action =
 const INITIAL: State = {
   nombre: "", apellido: "", cargo: "", departamento: "", municipio: "", email: "",
   telefono: "", foto: "", frase: "", modalidad: "",
-  habilidades: [], proyectos: [], formacion: [], experiencia: [],
+  habilidades: [], formaciones: [], proyectos: [], experiencias: [],
 };
 
 const STORAGE_KEY = "perfiltic-draft";
@@ -46,7 +46,7 @@ function reducer(state: State, action: Action): State {
   return { ...state, ...action.payload };
 }
 
-/* ─── Icon set (inline svg) ─── */
+/* ─── Icon set ─── */
 const Arrow = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
 );
@@ -88,14 +88,8 @@ const STEPS = [
 ];
 
 const LEVELS = ["Sé poco", "Básico", "Intermedio", "Avanzado", "Experto"];
-const TIPO_EXP = [
-  { v: "formal", l: "Empleo formal" },
-  { v: "informal", l: "Trabajo informal" },
-  { v: "voluntariado", l: "Voluntariado" },
-  { v: "practica", l: "Práctica / pasantía" },
-];
 
-/* ─── Step components ─── */
+/* ─── Step 1 ─── */
 function Step1({ state, dispatch }: { state: State; dispatch: React.Dispatch<Action> }) {
   const f = (k: keyof State) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     dispatch({ type: "SET", payload: { [k]: e.target.value } });
@@ -145,21 +139,22 @@ function Step1({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
   );
 }
 
+/* ─── Step 2 ─── */
 function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Action> }) {
   const [search, setSearch] = useState("");
   const [categoria, setCategoria] = useState("Todas");
-  const selected = new Set(state.habilidades.map(h => h.nombre));
+  const selected = new Set(state.habilidades.map((h) => h.nombre));
 
   const toggle = (nombre: string) => {
     if (selected.has(nombre)) {
-      dispatch({ type: "SET", payload: { habilidades: state.habilidades.filter(h => h.nombre !== nombre) } });
+      dispatch({ type: "SET", payload: { habilidades: state.habilidades.filter((h) => h.nombre !== nombre) } });
     } else {
       dispatch({ type: "SET", payload: { habilidades: [...state.habilidades, { nombre, nivel: 3 }] } });
     }
   };
 
   const setLevel = (nombre: string, nivel: number) => {
-    dispatch({ type: "SET", payload: { habilidades: state.habilidades.map(h => h.nombre === nombre ? { ...h, nivel } : h) } });
+    dispatch({ type: "SET", payload: { habilidades: state.habilidades.map((h) => h.nombre === nombre ? { ...h, nivel } : h) } });
   };
 
   const addCustom = () => {
@@ -169,7 +164,7 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
     setSearch("");
   };
 
-  const visibles = HABILIDADES_TIC.filter(h => {
+  const visibles = HABILIDADES_TIC.filter((h) => {
     const matchCat = categoria === "Todas" ? h.sugerida : h.categoria === categoria;
     const matchSearch = !search || h.nombre.toLowerCase().includes(search.toLowerCase());
     return matchSearch && (search ? true : matchCat);
@@ -178,24 +173,16 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
   return (
     <div className="space-y-5">
       <div className="relative">
-        <input className="field pr-20" value={search} onChange={e => setSearch(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && addCustom()}
+        <input className="field pr-20" value={search} onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && addCustom()}
           placeholder="Buscar o agregar (ej: Python, Canva...)" />
         <button onClick={addCustom} className="absolute right-1.5 top-1.5 h-8 px-3 rounded-[6px] bg-brand-600 text-white text-xs font-medium">Agregar</button>
       </div>
 
-      {/* Tabs de categoría */}
       <div className="flex gap-1.5 flex-wrap">
-        {["Todas", ...CATEGORIAS].map(cat => (
-          <button
-            key={cat}
-            onClick={() => setCategoria(cat)}
-            className={`h-7 px-3 rounded-full text-[11px] font-medium transition-colors ${
-              categoria === cat
-                ? "bg-brand-600 text-white"
-                : "bg-ink-100 text-ink-600 hover:bg-ink-200"
-            }`}
-          >
+        {["Todas", ...CATEGORIAS].map((cat) => (
+          <button key={cat} onClick={() => setCategoria(cat)}
+            className={`h-7 px-3 rounded-full text-[11px] font-medium transition-colors ${categoria === cat ? "bg-brand-600 text-white" : "bg-ink-100 text-ink-600 hover:bg-ink-200"}`}>
             {cat}
           </button>
         ))}
@@ -206,17 +193,13 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
           {search ? `Resultados para "${search}"` : categoria === "Todas" ? "Habilidades sugeridas" : categoria}
         </div>
         <div className="flex flex-wrap gap-2">
-          {visibles.map(h => (
+          {visibles.map((h) => (
             <button key={h.nombre} onClick={() => toggle(h.nombre)}
-              className={`h-9 px-3.5 rounded-full text-sm font-medium inline-flex items-center gap-1.5 border transition-colors ${
-                selected.has(h.nombre) ? "bg-brand-600 text-white border-brand-600" : "bg-white text-ink-700 border-ink-200 hover:border-ink-300"
-              }`}>
+              className={`h-9 px-3.5 rounded-full text-sm font-medium inline-flex items-center gap-1.5 border transition-colors ${selected.has(h.nombre) ? "bg-brand-600 text-white border-brand-600" : "bg-white text-ink-700 border-ink-200 hover:border-ink-300"}`}>
               {selected.has(h.nombre) && <Check />} {h.nombre}
             </button>
           ))}
-          {visibles.length === 0 && (
-            <p className="text-sm text-ink-400">Sin resultados. Usa "Agregar" para añadirla.</p>
-          )}
+          {visibles.length === 0 && <p className="text-sm text-ink-400">Sin resultados. Usa &quot;Agregar&quot; para añadirla.</p>}
         </div>
       </div>
 
@@ -224,7 +207,7 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
         <div>
           <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-3">Tu nivel en lo seleccionado</div>
           <div className="space-y-3">
-            {state.habilidades.map(h => (
+            {state.habilidades.map((h) => (
               <div key={h.nombre} className="card p-3.5">
                 <div className="flex items-center justify-between mb-2">
                   <div className="font-medium text-sm">{h.nombre}</div>
@@ -234,7 +217,7 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
                   </div>
                 </div>
                 <div className="flex gap-1.5">
-                  {[1, 2, 3, 4, 5].map(i => (
+                  {[1, 2, 3, 4, 5].map((i) => (
                     <button key={i} onClick={() => setLevel(h.nombre, i)}
                       className={`flex-1 h-2 rounded-full transition-colors ${i <= h.nivel ? "bg-brand-500" : "bg-ink-100"}`} />
                   ))}
@@ -248,86 +231,17 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
       <div className="p-3.5 rounded-[10px] bg-brand-50 border border-brand-100 flex gap-3">
         <span className="text-brand-600 shrink-0 mt-0.5"><Sparkle /></span>
         <div className="text-[13px] text-brand-800 leading-snug">
-          <b>Tip:</b> ser honesto con tu nivel funciona mejor. Los reclutadores valoran más quien dice <i>"básico"</i> con seguridad que quien exagera.
+          <b>Tip:</b> ser honesto con tu nivel funciona mejor. Los reclutadores valoran más quien dice <i>&quot;básico&quot;</i> con seguridad que quien exagera.
         </div>
       </div>
     </div>
   );
 }
 
-
-function Step4({ state, dispatch }: { state: State; dispatch: React.Dispatch<Action> }) {
-  const add = () => {
-    if (state.proyectos.length >= 6) return;
-    dispatch({ type: "SET", payload: { proyectos: [...state.proyectos, { titulo: "", descripcion: "", tag: "", enlace: "" }] } });
-  };
-  const remove = (i: number) => dispatch({ type: "SET", payload: { proyectos: state.proyectos.filter((_, idx) => idx !== i) } });
-  const update = (i: number, k: keyof Proyecto, v: string) => {
-    const next = state.proyectos.map((p, idx) => idx === i ? { ...p, [k]: v } : p);
-    dispatch({ type: "SET", payload: { proyectos: next } });
-  };
-  return (
-    <div className="space-y-4">
-      {state.proyectos.map((p, i) => (
-        <div key={i} className="card p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-medium text-ink-700">Proyecto {i + 1}</div>
-            <button onClick={() => remove(i)} className="text-ink-400 hover:text-red-500"><Trash /></button>
-          </div>
-          <input className="field" value={p.titulo} onChange={e => update(i, "titulo", e.target.value)} placeholder="Nombre del proyecto" />
-          <textarea className="field h-20 py-2 resize-none" value={p.descripcion} onChange={e => update(i, "descripcion", e.target.value)} placeholder="Descripción breve" />
-          <input className="field" value={p.tag} onChange={e => update(i, "tag", e.target.value)} placeholder="Tecnología / tag (ej: React)" />
-          <input className="field" value={p.enlace} onChange={e => update(i, "enlace", e.target.value)} placeholder="Enlace (opcional)" />
-        </div>
-      ))}
-      {state.proyectos.length < 6 && (
-        <button onClick={add} className="btn-outline w-full gap-2"><Plus /> Agregar proyecto</button>
-      )}
-      {state.proyectos.length >= 6 && (
-        <p className="text-xs text-ink-500 text-center">Máximo 6 proyectos</p>
-      )}
-    </div>
-  );
-}
-
-function Step5({ state, dispatch }: { state: State; dispatch: React.Dispatch<Action> }) {
-  const add = () => dispatch({ type: "SET", payload: { experiencia: [...state.experiencia, { cargo: "", empresa: "", periodo: "", descripcion: "", tipo: "formal" }] } });
-  const remove = (i: number) => dispatch({ type: "SET", payload: { experiencia: state.experiencia.filter((_, idx) => idx !== i) } });
-  const update = (i: number, k: keyof Experiencia, v: string) => {
-    const next = state.experiencia.map((e, idx) => idx === i ? { ...e, [k]: v } : e);
-    dispatch({ type: "SET", payload: { experiencia: next } });
-  };
-  return (
-    <div className="space-y-4">
-      {state.experiencia.map((e, i) => (
-        <div key={i} className="card p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-medium text-ink-700">Experiencia {i + 1}</div>
-            <button onClick={() => remove(i)} className="text-ink-400 hover:text-red-500"><Trash /></button>
-          </div>
-          <select className="field" value={e.tipo} onChange={ev => update(i, "tipo", ev.target.value)}>
-            {TIPO_EXP.map(t => <option key={t.v} value={t.v}>{t.l}</option>)}
-          </select>
-          <input className="field" value={e.cargo} onChange={ev => update(i, "cargo", ev.target.value)} placeholder="Cargo o rol" />
-          <input className="field" value={e.empresa} onChange={ev => update(i, "empresa", ev.target.value)} placeholder="Empresa / organización" />
-          <input className="field" value={e.periodo} onChange={ev => update(i, "periodo", ev.target.value)} placeholder="Período (ej: 2024 — Actual)" />
-          <textarea className="field h-20 py-2 resize-none" value={e.descripcion} onChange={ev => update(i, "descripcion", ev.target.value)} placeholder="Descripción de funciones" />
-        </div>
-      ))}
-      <button onClick={add} className="btn-outline w-full gap-2"><Plus /> Agregar experiencia</button>
-      <div className="p-3.5 rounded-[10px] bg-brand-50 border border-brand-100 flex gap-3">
-        <span className="text-brand-600 shrink-0 mt-0.5"><Sparkle /></span>
-        <div className="text-[13px] text-brand-800 leading-snug">
-          Incluye trabajos informales, voluntariados y prácticas. Todo cuenta.
-        </div>
-      </div>
-    </div>
-  );
-}
-
+/* ─── Step 6 ─── */
 function Step6({ state }: { state: State }) {
   const name = [state.nombre, state.apellido].filter(Boolean).join(" ");
-  const inits = name.split(" ").slice(0, 2).map(w => w[0]?.toUpperCase() ?? "").join("");
+  const inits = name.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
   return (
     <div className="space-y-4">
       <div className="card p-5">
@@ -336,28 +250,25 @@ function Step6({ state }: { state: State }) {
           <div>
             <div className="font-semibold text-base">{name || "—"}</div>
             <div className="text-sm text-ink-500">{state.cargo || "—"}</div>
-            <div className="text-xs text-ink-400">{state.municipio && state.departamento ? `${state.municipio}, ${state.departamento}` : ""} · {state.email}</div>
+            <div className="text-xs text-ink-400">
+              {state.municipio && state.departamento ? `${state.municipio}, ${state.departamento}` : ""} · {state.email}
+            </div>
           </div>
         </div>
         {state.frase && <p className="text-sm text-ink-700 leading-relaxed border-t border-ink-100 pt-3">{state.frase}</p>}
       </div>
       <div className="grid grid-cols-2 gap-3 text-sm">
-        <div className="card p-3">
-          <div className="text-[10px] uppercase tracking-wider text-brand-700 font-medium mb-1">Habilidades</div>
-          <div className="text-ink-900 font-semibold">{state.habilidades.length}</div>
-        </div>
-        <div className="card p-3">
-          <div className="text-[10px] uppercase tracking-wider text-brand-700 font-medium mb-1">Proyectos</div>
-          <div className="text-ink-900 font-semibold">{state.proyectos.length}</div>
-        </div>
-        <div className="card p-3">
-          <div className="text-[10px] uppercase tracking-wider text-brand-700 font-medium mb-1">Formación</div>
-          <div className="text-ink-900 font-semibold">{state.formacion.length}</div>
-        </div>
-        <div className="card p-3">
-          <div className="text-[10px] uppercase tracking-wider text-brand-700 font-medium mb-1">Experiencia</div>
-          <div className="text-ink-900 font-semibold">{state.experiencia.length}</div>
-        </div>
+        {[
+          { label: "Habilidades", count: state.habilidades.length },
+          { label: "Formación", count: state.formaciones.length },
+          { label: "Proyectos", count: state.proyectos.length },
+          { label: "Experiencia", count: state.experiencias.length },
+        ].map(({ label, count }) => (
+          <div key={label} className="card p-3">
+            <div className="text-[10px] uppercase tracking-wider text-brand-700 font-medium mb-1">{label}</div>
+            <div className="text-ink-900 font-semibold">{count}</div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -367,23 +278,27 @@ function Step6({ state }: { state: State }) {
 export default function CrearPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [state, dispatch] = useReducer(reducer, INITIAL, () => {
-    if (typeof window === "undefined") return INITIAL;
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? { ...INITIAL, ...JSON.parse(saved) } : INITIAL;
-    } catch {
-      return INITIAL;
-    }
-  });
+  const [state, dispatch] = useReducer(reducer, INITIAL);
+  const [hydrated, setHydrated] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  // Load draft after hydration — never in the lazy initializer (causes SSR mismatch)
   useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
-  }, [state]);
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) dispatch({ type: "SET", payload: JSON.parse(saved) });
+    } catch {}
+    setHydrated(true);
+  }, []);
 
-  const pct = (step / STEPS.length) * 100;
+  // Persist to localStorage only after the draft has been loaded
+  useEffect(() => {
+    if (!hydrated) return;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+  }, [state, hydrated]);
+
+  const salir = () => { localStorage.removeItem(STORAGE_KEY); router.push("/"); };
 
   const canAdvance = () => {
     if (step === 1) return state.nombre && state.cargo && state.departamento && state.municipio && state.email;
@@ -400,10 +315,7 @@ export default function CrearPage() {
         body: JSON.stringify(state),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Error al publicar. Intenta de nuevo.");
-        return;
-      }
+      if (!res.ok) { setError(data.error ?? "Error al publicar. Intenta de nuevo."); return; }
       localStorage.removeItem(STORAGE_KEY);
       router.push(`/${data.slug}`);
     } catch {
@@ -413,20 +325,54 @@ export default function CrearPage() {
     }
   };
 
+  /* Full-screen steps 3, 4, 5 */
+  if (step === 3) {
+    return (
+      <PasoFormacion
+        formaciones={state.formaciones}
+        onChange={(f) => dispatch({ type: "SET", payload: { formaciones: f } })}
+        onNext={() => setStep(4)}
+        onBack={() => setStep(2)}
+        onSalir={salir}
+      />
+    );
+  }
+  if (step === 4) {
+    return (
+      <PasoProyectos
+        proyectos={state.proyectos}
+        onChange={(p) => dispatch({ type: "SET", payload: { proyectos: p } })}
+        onNext={() => setStep(5)}
+        onBack={() => setStep(3)}
+        onSalir={salir}
+      />
+    );
+  }
+  if (step === 5) {
+    return (
+      <PasoExperiencia
+        experiencias={state.experiencias}
+        onChange={(e) => dispatch({ type: "SET", payload: { experiencias: e } })}
+        onNext={() => setStep(6)}
+        onBack={() => setStep(4)}
+        onSalir={salir}
+      />
+    );
+  }
+
+  const pct = (step / STEPS.length) * 100;
   const stepLabel = STEPS[step - 1]?.label ?? "";
 
   return (
     <div className="min-h-dvh bg-ink-50 font-sans text-ink-900 flex flex-col">
-      {/* Top bar */}
       <header className="px-5 pt-5 pb-3 bg-white border-b border-ink-100">
         <div className="flex items-center justify-between">
-          <button onClick={() => step > 1 ? setStep(s => s - 1) : router.push("/")}
+          <button onClick={() => step > 1 ? setStep((s) => s - 1) : router.push("/")}
             className="text-ink-700 -ml-1 h-9 w-9 grid place-items-center rounded-md hover:bg-ink-50">
             <Back />
           </button>
           <Logo />
-          <button onClick={() => { localStorage.removeItem(STORAGE_KEY); router.push("/"); }}
-            className="text-xs font-medium text-ink-500">Salir</button>
+          <button onClick={salir} className="text-xs font-medium text-ink-500">Salir</button>
         </div>
 
         <div className="mt-4">
@@ -438,7 +384,7 @@ export default function CrearPage() {
             <div className="h-full bg-brand-500 rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
           </div>
           <div className="mt-3 grid grid-cols-6 gap-1">
-            {STEPS.map(s => (
+            {STEPS.map((s) => (
               <div key={s.n} className="flex flex-col items-center gap-1">
                 <div className={`h-7 w-7 rounded-full grid place-items-center text-[11px] font-semibold
                   ${s.n < step ? "bg-brand-600 text-white" :
@@ -453,51 +399,35 @@ export default function CrearPage() {
         </div>
       </header>
 
-      {/* Body */}
-      <main className={`flex-1 overflow-y-auto py-6 mx-auto w-full ${step === 3 ? "px-4 max-w-3xl" : "px-5 max-w-lg"}`}>
+      <main className="flex-1 overflow-y-auto py-6 px-5 max-w-lg mx-auto w-full">
         <div className="text-xs font-medium uppercase tracking-wider text-brand-700">Paso {step}</div>
         <h1 className="mt-1 text-[24px] leading-tight font-semibold">
           {step === 1 && "Información personal"}
           {step === 2 && "¿Qué herramientas TIC manejas?"}
-          {step === 3 && "Formación y certificados"}
-          {step === 4 && "Tus proyectos"}
-          {step === 5 && "Experiencia laboral"}
           {step === 6 && "Vista previa"}
         </h1>
-        {step === 6 && (
-          <p className="mt-2 text-[14px] text-ink-600">Revisa que todo esté correcto antes de publicar tu perfil.</p>
-        )}
+        {step === 6 && <p className="mt-2 text-[14px] text-ink-600">Revisa que todo esté correcto antes de publicar tu perfil.</p>}
         <div className="mt-5">
           {step === 1 && <Step1 state={state} dispatch={dispatch} />}
           {step === 2 && <Step2 state={state} dispatch={dispatch} />}
-          {step === 3 && (
-            <Step3Formacion
-              formaciones={state.formacion}
-              onChange={(f) => dispatch({ type: "SET", payload: { formacion: f } })}
-            />
-          )}
-          {step === 4 && <Step4 state={state} dispatch={dispatch} />}
-          {step === 5 && <Step5 state={state} dispatch={dispatch} />}
           {step === 6 && <Step6 state={state} />}
         </div>
         {error && <p className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">{error}</p>}
       </main>
 
-      {/* Footer */}
       <footer className="bg-white border-t border-ink-100 px-5 py-3 flex gap-3 items-center max-w-lg mx-auto w-full">
         {step > 1 && (
-          <button onClick={() => setStep(s => s - 1)} className="btn-outline h-12 flex-1 gap-2">
+          <button onClick={() => setStep((s) => s - 1)} className="btn-outline h-12 flex-1 gap-2">
             <Back /> Anterior
           </button>
         )}
         {step < 6 ? (
-          <button onClick={() => canAdvance() && setStep(s => s + 1)}
+          <button onClick={() => canAdvance() && setStep((s) => s + 1)}
             className={`btn-primary h-12 flex-[1.4] gap-2 ${!canAdvance() ? "opacity-50 cursor-not-allowed" : ""}`}>
             Siguiente <Arrow />
           </button>
         ) : (
-          <button onClick={publish} disabled={submitting}
-            className="btn-primary h-12 flex-[1.4] gap-2 disabled:opacity-50">
+          <button onClick={publish} disabled={submitting} className="btn-primary h-12 flex-[1.4] gap-2 disabled:opacity-50">
             <Eye /> {submitting ? "Publicando..." : "Publicar perfil"}
           </button>
         )}

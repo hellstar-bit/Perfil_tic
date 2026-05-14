@@ -7,30 +7,37 @@ const habilidadSchema = z.object({
   nivel: z.number().int().min(1).max(5),
 });
 
-const proyectoSchema = z.object({
-  titulo: z.string().min(1),
-  descripcion: z.string().min(1),
-  tag: z.string().optional(),
-  enlace: z.string().url().optional().or(z.literal("")),
-  imagen: z.string().optional(),
-});
-
 const formacionSchema = z.object({
   id: z.string().optional(),
-  programa: z.string().min(1),
+  nombre: z.string().min(1),
   institucion: z.string().min(1),
   nivel: z.string().min(1),
-  anioInicio: z.string().min(1),
-  anioFin: z.string().min(1),
-  urlCert: z.string().optional(),
+  inicio: z.string().min(1),
+  fin: z.string().min(1),
+  cert: z.string().optional().default(""),
+});
+
+const proyectoSchema = z.object({
+  id: z.string().optional(),
+  nombre: z.string().min(1),
+  descripcion: z.string().min(1),
+  tipo: z.string().min(1),
+  tecnologias: z.array(z.string()).default([]),
+  url: z.string().optional().default(""),
+  imagen: z.string().optional().default(""),
+  color: z.string().optional().default(""),
+  iniciales: z.string().optional().default(""),
 });
 
 const experienciaSchema = z.object({
+  id: z.string().optional(),
   cargo: z.string().min(1),
   empresa: z.string().min(1),
-  periodo: z.string().min(1),
+  tipo: z.string().min(1),
+  emoji: z.string().optional().default(""),
+  inicio: z.string().min(1),
+  fin: z.string().min(1),
   descripcion: z.string().min(1),
-  tipo: z.enum(["formal", "informal", "voluntariado", "practica"]),
 });
 
 const perfilSchema = z.object({
@@ -45,9 +52,9 @@ const perfilSchema = z.object({
   frase: z.string().optional(),
   modalidad: z.string().optional(),
   habilidades: z.array(habilidadSchema).default([]),
+  formaciones: z.array(formacionSchema).default([]),
   proyectos: z.array(proyectoSchema).default([]),
-  formacion: z.array(formacionSchema).default([]),
-  experiencia: z.array(experienciaSchema).default([]),
+  experiencias: z.array(experienciaSchema).default([]),
 });
 
 function toSlug(text: string): string {
@@ -83,7 +90,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { nombre, apellido, cargo, departamento, municipio, email, telefono, foto, frase, modalidad, habilidades, proyectos, formacion, experiencia } = parsed.data;
+    const {
+      nombre, apellido, cargo, departamento, municipio, email,
+      telefono, foto, frase, modalidad,
+      habilidades, formaciones, proyectos, experiencias,
+    } = parsed.data;
+
     const fullName = apellido ? `${nombre} ${apellido}` : nombre;
     const slugBase = toSlug(fullName);
     const slug = await uniqueSlug(slugBase);
@@ -91,18 +103,7 @@ export async function POST(request: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const perfil = await (prisma.$transaction as any)(async (tx: typeof prisma) => {
       const p = await tx.perfil.create({
-        data: {
-          slug,
-          nombre: fullName,
-          cargo,
-          departamento,
-          municipio,
-          email,
-          telefono,
-          foto,
-          frase,
-          modalidad,
-        },
+        data: { slug, nombre: fullName, cargo, departamento, municipio, email, telefono, foto, frase, modalidad },
       });
 
       if (habilidades.length > 0) {
@@ -111,33 +112,43 @@ export async function POST(request: NextRequest) {
         });
       }
 
+      if (formaciones.length > 0) {
+        await tx.formacion.createMany({
+          data: formaciones.map((f) => ({
+            programa: f.nombre,
+            institucion: f.institucion,
+            nivel: f.nivel,
+            anioInicio: f.inicio,
+            anioFin: f.fin,
+            urlCert: f.cert || null,
+            perfilId: p.id,
+          })),
+        });
+      }
+
       if (proyectos.length > 0) {
         await tx.proyecto.createMany({
           data: proyectos.map((pr) => ({
-            ...pr,
-            enlace: pr.enlace || null,
+            titulo: pr.nombre,
+            descripcion: pr.descripcion,
+            tag: [pr.tipo, ...pr.tecnologias].filter(Boolean).join(", "),
+            enlace: pr.url || null,
+            imagen: pr.imagen || null,
             perfilId: p.id,
           })),
         });
       }
 
-      if (formacion.length > 0) {
-        await tx.formacion.createMany({
-          data: formacion.map((f) => ({
-            programa: f.programa,
-            institucion: f.institucion,
-            nivel: f.nivel,
-            anioInicio: f.anioInicio,
-            anioFin: f.anioFin,
-            urlCert: f.urlCert || null,
-            perfilId: p.id,
-          })),
-        });
-      }
-
-      if (experiencia.length > 0) {
+      if (experiencias.length > 0) {
         await tx.experiencia.createMany({
-          data: experiencia.map((e) => ({ ...e, perfilId: p.id })),
+          data: experiencias.map((e) => ({
+            cargo: e.cargo,
+            empresa: e.empresa,
+            periodo: `${e.inicio} — ${e.fin}`,
+            descripcion: e.descripcion,
+            tipo: e.tipo,
+            perfilId: p.id,
+          })),
         });
       }
 

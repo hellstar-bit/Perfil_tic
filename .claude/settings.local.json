@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(psql --version)",
+      "Bash(pg_isready)",
+      "PowerShell(Get-Command psql -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Command pg_isready -ErrorAction SilentlyContinue)",
+      "PowerShell($pgPath = \\(Get-ChildItem \"C:\\\\Program Files\\\\PostgreSQL\" -ErrorAction SilentlyContinue | Sort-Object Name -Descending | Select-Object -First 1\\).FullName; Write-Output $pgPath; & \"$pgPath\\\\bin\\\\psql\" --version)",
+      "PowerShell(& \"C:\\\\Program Files\\\\PostgreSQL\\\\18\\\\bin\\\\psql\" -U postgres -c \"SELECT 1\" 2>&1)",
+      "PowerShell($env:PGPASSWORD = \"postgres\"; & \"C:\\\\Program Files\\\\PostgreSQL\\\\18\\\\bin\\\\psql\" -U postgres -c \"CREATE DATABASE perfiltic;\" 2>&1)"
+    ]
+  }
+}
