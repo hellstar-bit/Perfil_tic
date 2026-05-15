@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 
 const habilidadSchema = z.object({
   nombre: z.string().min(1),
@@ -51,6 +52,7 @@ const perfilSchema = z.object({
   foto: z.string().optional(),
   frase: z.string().optional(),
   modalidad: z.string().optional(),
+  colorTema: z.string().optional().default("#0f6e56"),
   habilidades: z.array(habilidadSchema).default([]),
   formaciones: z.array(formacionSchema).default([]),
   proyectos: z.array(proyectoSchema).default([]),
@@ -81,6 +83,9 @@ async function uniqueSlug(base: string): Promise<string> {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    const userId = session?.user?.id ?? null;
+
     const body = await request.json();
     const parsed = perfilSchema.safeParse(body);
     if (!parsed.success) {
@@ -92,9 +97,20 @@ export async function POST(request: NextRequest) {
 
     const {
       nombre, apellido, cargo, departamento, municipio, email,
-      telefono, foto, frase, modalidad,
+      telefono, foto, frase, modalidad, colorTema,
       habilidades, formaciones, proyectos, experiencias,
     } = parsed.data;
+
+    // Prevent duplicate profile for the same user
+    if (userId) {
+      const existing = await prisma.perfil.findUnique({ where: { userId } });
+      if (existing) {
+        return NextResponse.json(
+          { error: "Ya tienes un perfil creado", slug: existing.slug },
+          { status: 409 }
+        );
+      }
+    }
 
     const fullName = apellido ? `${nombre} ${apellido}` : nombre;
     const slugBase = toSlug(fullName);
@@ -103,7 +119,7 @@ export async function POST(request: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const perfil = await (prisma.$transaction as any)(async (tx: typeof prisma) => {
       const p = await tx.perfil.create({
-        data: { slug, nombre: fullName, cargo, departamento, municipio, email, telefono, foto, frase, modalidad },
+        data: { slug, nombre: fullName, cargo, departamento, municipio, email, telefono, foto, frase, modalidad, colorTema, userId },
       });
 
       if (habilidades.length > 0) {
@@ -158,6 +174,88 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ perfilId: perfil.id, slug: perfil.slug }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/perfil]", err);
+    return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    const perfilExistente = await prisma.perfil.findUnique({
+      where: { userId: session.user.id },
+      select: { id: true, slug: true },
+    });
+    if (!perfilExistente) {
+      return NextResponse.json({ error: "Perfil no encontrado" }, { status: 404 });
+    }
+
+    const body = await request.json();
+    const parsed = perfilSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Datos inválidos", details: parsed.error.flatten() }, { status: 400 });
+    }
+
+    const {
+      nombre, apellido, cargo, departamento, municipio, email,
+      telefono, foto, frase, modalidad, colorTema,
+      habilidades, formaciones, proyectos, experiencias,
+    } = parsed.data;
+
+    const fullName = apellido ? `${nombre} ${apellido}` : nombre;
+    const pid = perfilExistente.id;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (prisma.$transaction as any)(async (tx: typeof prisma) => {
+      // Update core fields (slug stays fixed to preserve the public link)
+      await tx.perfil.update({
+        where: { id: pid },
+        data: { nombre: fullName, cargo, departamento, municipio, email, telefono, foto, frase, modalidad, colorTema },
+      });
+
+      // Replace all nested records
+      await tx.habilidad.deleteMany({ where: { perfilId: pid } });
+      await tx.formacion.deleteMany({ where: { perfilId: pid } });
+      await tx.proyecto.deleteMany({ where: { perfilId: pid } });
+      await tx.experiencia.deleteMany({ where: { perfilId: pid } });
+
+      if (habilidades.length > 0) {
+        await tx.habilidad.createMany({ data: habilidades.map((h) => ({ ...h, perfilId: pid })) });
+      }
+      if (formaciones.length > 0) {
+        await tx.formacion.createMany({
+          data: formaciones.map((f) => ({
+            programa: f.nombre, institucion: f.institucion, nivel: f.nivel,
+            anioInicio: f.inicio, anioFin: f.fin, urlCert: f.cert || null, perfilId: pid,
+          })),
+        });
+      }
+      if (proyectos.length > 0) {
+        await tx.proyecto.createMany({
+          data: proyectos.map((pr) => ({
+            titulo: pr.nombre, descripcion: pr.descripcion,
+            tag: [pr.tipo, ...pr.tecnologias].filter(Boolean).join(", "),
+            enlace: pr.url || null, imagen: pr.imagen || null, perfilId: pid,
+          })),
+        });
+      }
+      if (experiencias.length > 0) {
+        await tx.experiencia.createMany({
+          data: experiencias.map((e) => ({
+            cargo: e.cargo, empresa: e.empresa,
+            periodo: `${e.inicio} — ${e.fin}`,
+            descripcion: e.descripcion, tipo: e.tipo, perfilId: pid,
+          })),
+        });
+      }
+    });
+
+    return NextResponse.json({ slug: perfilExistente.slug });
+  } catch (err) {
+    console.error("[PUT /api/perfil]", err);
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
   }
 }

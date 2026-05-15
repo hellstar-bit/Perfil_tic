@@ -7,6 +7,16 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  perfil    Perfil?
+}
+
 model Perfil {
   id          String   @id @default(cuid())
   slug        String   @unique
@@ -20,8 +30,11 @@ model Perfil {
   frase       String?
   disponible  Boolean  @default(true)
   modalidad   String?
+  colorTema   String   @default("#0f6e56")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  userId      String?  @unique
+  user        User?    @relation(fields: [userId], references: [id])
   habilidades Habilidad[]
   proyectos   Proyecto[]
   formacion   Formacion[]

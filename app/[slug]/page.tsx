@@ -1,13 +1,12 @@
 import { notFound } from "next/navigation";
 import type { Habilidad, Proyecto, Formacion, Experiencia } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { ShareButtonMobile, ShareButtonDesktop, CopyButtonInline, CopyButtonDesktop } from "./ShareButtons";
 
 export const dynamic = "force-dynamic";
 
 /* ─── Inline icons ─── */
-const Share = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/></svg>
-);
 const Download = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14"/></svg>
 );
@@ -23,8 +22,8 @@ const Phone = () => (
 const Link = () => (
   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 1 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 1 0 5.66 5.66l1-1"/></svg>
 );
-const Copy = () => (
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+const Edit = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 );
 
 const Logo = () => (
@@ -56,14 +55,22 @@ async function getPerfil(slug: string) {
     include: { habilidades: true, proyectos: true, formacion: true, experiencia: true },
   });
 }
+// userId is needed for owner check but not exposed to the layout components
 
 /* ─── Mobile layout ─── */
-function PerfilMobile({ perfil }: { perfil: NonNullable<Perfil> }) {
+function PerfilMobile({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwner: boolean }) {
   return (
     <div className="min-h-dvh bg-ink-50 font-sans text-ink-900">
       <div className="px-5 pt-4 pb-3 flex items-center justify-between bg-white border-b border-ink-100">
         <Logo />
-        <button className="text-xs font-medium text-brand-700 inline-flex items-center gap-1"><Share /> Compartir</button>
+        <div className="flex items-center gap-2">
+          {isOwner && (
+            <a href="/editar" className="text-xs font-medium text-ink-600 inline-flex items-center gap-1 border border-ink-200 rounded-md px-2.5 py-1.5 hover:bg-ink-50">
+              <Edit /> Editar
+            </a>
+          )}
+          <ShareButtonMobile slug={perfil.slug} />
+        </div>
       </div>
 
       <section className="bg-white px-5 pt-6 pb-5">
@@ -108,7 +115,6 @@ function PerfilMobile({ perfil }: { perfil: NonNullable<Perfil> }) {
           <div className="mt-3 grid grid-cols-2 gap-3">
             {perfil.proyectos.map((p: Proyecto) => (
               <div key={p.id} className="card overflow-hidden">
-                <div className="h-20 w-full bg-brand-50" />
                 <div className="p-3">
                   {p.tag && <div className="text-[10px] font-medium uppercase tracking-wider text-brand-700">{p.tag}</div>}
                   <div className="font-semibold text-[13px] leading-tight mt-0.5">{p.titulo}</div>
@@ -159,7 +165,7 @@ function PerfilMobile({ perfil }: { perfil: NonNullable<Perfil> }) {
         <div className="mt-2 flex items-center gap-2 bg-brand-700 rounded-[8px] p-3 font-mono text-[13px]">
           <Link />
           <span className="truncate flex-1">perfiltic.co/{perfil.slug}</span>
-          <button className="shrink-0 inline-flex items-center gap-1 bg-white/15 hover:bg-white/25 px-2 py-1 rounded-md text-xs"><Copy /> Copiar</button>
+          <CopyButtonInline slug={perfil.slug} />
         </div>
       </section>
 
@@ -172,7 +178,7 @@ function PerfilMobile({ perfil }: { perfil: NonNullable<Perfil> }) {
 }
 
 /* ─── Desktop layout ─── */
-function PerfilDesktop({ perfil }: { perfil: NonNullable<Perfil> }) {
+function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwner: boolean }) {
   return (
     <div className="min-h-dvh bg-ink-50 font-sans text-ink-900">
       <header className="px-10 py-4 flex items-center justify-between bg-white border-b border-ink-100">
@@ -180,7 +186,12 @@ function PerfilDesktop({ perfil }: { perfil: NonNullable<Perfil> }) {
           <svg viewBox="0 0 24 24" width="60%" height="60%" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round"><path d="M5 19V5h7a4 4 0 0 1 0 8H5"/></svg>
         </div>
         <div className="flex items-center gap-3">
-          <button className="btn-outline h-10 gap-2"><Share /> Compartir</button>
+          {isOwner && (
+            <a href="/editar" className="btn-outline h-10 gap-2">
+              <Edit /> Editar perfil
+            </a>
+          )}
+          <ShareButtonDesktop slug={perfil.slug} />
           <a href={`/api/cv/${perfil.id}`} download className="btn-primary h-10 gap-2 inline-flex items-center justify-center px-5 rounded-[8px] font-medium text-sm">
             <Download /> Descargar CV
           </a>
@@ -232,7 +243,7 @@ function PerfilDesktop({ perfil }: { perfil: NonNullable<Perfil> }) {
             <div className="mt-3 flex items-center gap-2 bg-brand-700 rounded-[8px] p-3 font-mono text-[12px] text-white">
               <Link />
               <span className="truncate flex-1">perfiltic.co/{perfil.slug}</span>
-              <button className="shrink-0 inline-flex items-center gap-1 bg-white/15 hover:bg-white/25 px-2 py-1 rounded-md text-xs text-white"><Copy /> Copiar</button>
+              <CopyButtonDesktop slug={perfil.slug} />
             </div>
           </div>
         </aside>
@@ -244,7 +255,6 @@ function PerfilDesktop({ perfil }: { perfil: NonNullable<Perfil> }) {
               <div className="grid grid-cols-3 gap-3.5">
                 {perfil.proyectos.map((p: Proyecto) => (
                   <div key={p.id} className="rounded-[10px] border border-ink-200 overflow-hidden hover:shadow-sm transition-shadow">
-                    <div className="h-24 w-full bg-brand-50" />
                     <div className="p-3.5">
                       {p.tag && <div className="text-[10px] font-medium uppercase tracking-wider text-brand-700">{p.tag}</div>}
                       <div className="font-semibold text-[14px] leading-tight mt-0.5">{p.titulo}</div>
@@ -304,13 +314,15 @@ function PerfilDesktop({ perfil }: { perfil: NonNullable<Perfil> }) {
 /* ─── Page ─── */
 export default async function SlugPage(props: PageProps<"/[slug]">) {
   const { slug } = await props.params;
-  const perfil = await getPerfil(slug);
+  const [perfil, session] = await Promise.all([getPerfil(slug), auth()]);
   if (!perfil) notFound();
+
+  const isOwner = !!session?.user?.id && session.user.id === perfil.userId;
 
   return (
     <>
-      <div className="md:hidden"><PerfilMobile perfil={perfil} /></div>
-      <div className="hidden md:block"><PerfilDesktop perfil={perfil} /></div>
+      <div className="md:hidden"><PerfilMobile perfil={perfil} isOwner={isOwner} /></div>
+      <div className="hidden md:block"><PerfilDesktop perfil={perfil} isOwner={isOwner} /></div>
     </>
   );
 }
