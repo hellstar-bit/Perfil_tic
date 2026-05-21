@@ -28,7 +28,7 @@ export function ShareButtonMobile({ slug }: { slug: string }) {
   return (
     <button
       onClick={copy}
-      className="text-xs font-medium text-brand-700 inline-flex items-center gap-1"
+      className="text-xs font-medium text-neon inline-flex items-center gap-1"
     >
       {copied ? <><Check /> ¡Copiado!</> : <><Share /> Compartir</>}
     </button>

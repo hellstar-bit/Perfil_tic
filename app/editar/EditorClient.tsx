@@ -37,10 +37,10 @@ const Save  = () => <svg viewBox="0 0 24 24" width="20" height="20" fill="none" 
 
 const Logo = () => (
   <div className="flex items-center gap-2">
-    <div className="h-7 aspect-square rounded-[7px] bg-brand-600 grid place-items-center text-white">
-      <svg viewBox="0 0 24 24" width="60%" height="60%" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round"><path d="M5 19V5h7a4 4 0 0 1 0 8H5"/></svg>
+    <div className="h-7 aspect-square rounded-[7px] bg-neon grid place-items-center text-noir">
+      <svg viewBox="0 0 24 24" width="60%" height="60%" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 19V5h7a4 4 0 0 1 0 8H5"/></svg>
     </div>
-    <span className="font-semibold text-ink-900 tracking-tight text-[15px]">Perfil<span className="text-brand-600">TIC</span></span>
+    <span className="font-semibold text-ink-900 tracking-tight text-[15px]">Perfil<span className="text-neon">TIC</span></span>
   </div>
 );
 
@@ -132,12 +132,12 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
         <input className="field pr-20" value={search} onChange={(e) => setSearch(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addCustom()}
           placeholder="Buscar o agregar (ej: Python, Canva...)" />
-        <button onClick={addCustom} className="absolute right-1.5 top-1.5 h-8 px-3 rounded-[6px] bg-brand-600 text-white text-xs font-medium">Agregar</button>
+        <button onClick={addCustom} className="absolute right-1.5 top-1.5 h-8 px-3 rounded-[6px] bg-neon text-noir text-xs font-semibold">Agregar</button>
       </div>
       <div className="flex gap-1.5 flex-wrap">
         {["Todas", ...CATEGORIAS].map((cat) => (
           <button key={cat} onClick={() => setCategoria(cat)}
-            className={`h-7 px-3 rounded-full text-[11px] font-medium transition-colors ${categoria === cat ? "bg-brand-600 text-white" : "bg-ink-100 text-ink-600 hover:bg-ink-200"}`}>
+            className={`h-7 px-3 rounded-full text-[11px] font-medium transition-colors ${categoria === cat ? "bg-neon text-noir" : "bg-ink-100 text-ink-600 hover:bg-ink-200"}`}>
             {cat}
           </button>
         ))}
@@ -149,7 +149,7 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
         <div className="flex flex-wrap gap-2">
           {visibles.map((h) => (
             <button key={h.nombre} onClick={() => toggle(h.nombre)}
-              className={`h-9 px-3.5 rounded-full text-sm font-medium inline-flex items-center gap-1.5 border transition-colors ${selected.has(h.nombre) ? "bg-brand-600 text-white border-brand-600" : "bg-white text-ink-700 border-ink-200 hover:border-ink-300"}`}>
+              className={`h-9 px-3.5 rounded-full text-sm font-medium inline-flex items-center gap-1.5 border transition-colors ${selected.has(h.nombre) ? "bg-neon text-noir border-neon" : "bg-ink-100 text-ink-900 border-ink-200 hover:border-ink-300"}`}>
               {selected.has(h.nombre) && <Check />} {h.nombre}
             </button>
           ))}
@@ -306,7 +306,7 @@ export function EditorClient({ initialState, slug }: { initialState: State; slug
 
   return (
     <div className="min-h-dvh bg-ink-50 font-sans text-ink-900 flex flex-col">
-      <header className="px-5 pt-5 pb-3 bg-white border-b border-ink-100">
+      <header className="px-5 pt-5 pb-3 bg-ink-50 border-b border-ink-200">
         <div className="flex items-center justify-between">
           <button onClick={() => step > 1 ? setStep((s) => s - 1) : router.push(`/${slug}`)}
             className="text-ink-700 -ml-1 h-9 w-9 grid place-items-center rounded-md hover:bg-ink-50">
@@ -318,7 +318,7 @@ export function EditorClient({ initialState, slug }: { initialState: State; slug
         <div className="mt-4">
           <div className="flex items-center justify-between text-[11px] font-medium text-ink-500 mb-2">
             <span>Paso {step} de {STEPS.length}</span>
-            <span className="text-brand-700">{STEPS[step - 1]?.label}</span>
+            <span className="text-neon">{STEPS[step - 1]?.label}</span>
           </div>
           <div className="h-1.5 w-full bg-ink-100 rounded-full overflow-hidden">
             <div className="h-full bg-brand-500 rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
@@ -327,10 +327,10 @@ export function EditorClient({ initialState, slug }: { initialState: State; slug
             {STEPS.map((s) => (
               <div key={s.n} className="flex flex-col items-center gap-1">
                 <div className={`h-7 w-7 rounded-full grid place-items-center text-[11px] font-semibold
-                  ${s.n < step ? "bg-brand-600 text-white" : s.n === step ? "bg-brand-50 text-brand-700 ring-2 ring-brand-500" : "bg-ink-100 text-ink-400"}`}>
+                  ${s.n < step ? "bg-neon text-noir" : s.n === step ? "bg-brand-50 text-neon ring-2 ring-neon" : "bg-ink-100 text-ink-400"}`}>
                   {s.n < step ? <Check /> : s.n}
                 </div>
-                <div className={`text-[9px] leading-none truncate w-full text-center ${s.n === step ? "text-brand-700 font-medium" : "text-ink-400"}`}>{s.label}</div>
+                <div className={`text-[9px] leading-none truncate w-full text-center ${s.n === step ? "text-neon font-medium" : "text-ink-400"}`}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -338,7 +338,7 @@ export function EditorClient({ initialState, slug }: { initialState: State; slug
       </header>
 
       <main className="flex-1 overflow-y-auto py-6 px-5 max-w-lg mx-auto w-full">
-        <div className="text-xs font-medium uppercase tracking-wider text-brand-700">Paso {step}</div>
+        <div className="text-xs font-medium uppercase tracking-wider text-neon">Paso {step}</div>
         <h1 className="mt-1 text-[24px] leading-tight font-semibold">
           {step === 1 && "Información personal"}
           {step === 2 && "¿Qué herramientas TIC manejas?"}
@@ -353,7 +353,7 @@ export function EditorClient({ initialState, slug }: { initialState: State; slug
         {error && <p className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">{error}</p>}
       </main>
 
-      <footer className="bg-white border-t border-ink-100 px-5 py-3 flex gap-3 items-center max-w-lg mx-auto w-full">
+      <footer className="bg-ink-50 border-t border-ink-200 px-5 py-3 flex gap-3 items-center max-w-lg mx-auto w-full">
         {step > 1 && (
           <button onClick={() => setStep((s) => s - 1)} className="btn-outline h-12 flex-1 gap-2">
             <Back /> Anterior

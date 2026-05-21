@@ -14,8 +14,8 @@ export function SavedCard({ active, deleting, onEdit, onDelete, children }: Prop
       className={`group relative rounded-[12px] border overflow-hidden transition-all duration-150
         ${deleting ? "opacity-0" : "opacity-100"}
         ${active
-          ? "border-brand-500 bg-brand-50 shadow-[0_0_0_3px_rgba(29,158,117,0.12)]"
-          : "border-ink-200 bg-white hover:border-brand-400"}`}
+          ? "border-neon bg-brand-50 shadow-[0_0_0_3px_rgba(0,229,160,0.15)]"
+          : "border-ink-200 bg-ink-100 hover:border-neon/40"}`}
     >
       {children}
 
@@ -25,13 +25,13 @@ export function SavedCard({ active, deleting, onEdit, onDelete, children }: Prop
       >
         <button
           onClick={onEdit}
-          className="h-7 w-7 rounded-md bg-white border border-ink-200 grid place-items-center text-ink-600 hover:text-brand-700 hover:border-brand-300"
+          className="h-7 w-7 rounded-md bg-ink-200 border border-ink-300 grid place-items-center text-ink-600 hover:text-neon hover:border-neon/50"
         >
           <Icons.Edit />
         </button>
         <button
           onClick={onDelete}
-          className="h-7 w-7 rounded-md bg-white border border-ink-200 grid place-items-center text-ink-600 hover:text-[#c25450] hover:border-[#e0a8a6]"
+          className="h-7 w-7 rounded-md bg-ink-200 border border-ink-300 grid place-items-center text-ink-600 hover:text-coral hover:border-coral/50"
         >
           <Icons.Trash />
         </button>

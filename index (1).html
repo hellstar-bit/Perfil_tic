@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>PerfilTIC · Sistema de diseño</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind v4 browser build -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<style type="text/tailwindcss">
+  @theme {
+    /* ===== Tierra + Neón ===== */
+    --color-noir:     #0E0E0E;
+    --color-surface:  #161616;
+    --color-surface2: #1E1E1E;
+    --color-surface3: #262626;
+    --color-neon:     #00E5A0;
+    --color-warm:     #FFD166;
+    --color-coral:    #FF6B6B;
+    --color-paper:    #F5F5F0;
+    --color-mute:     #8A8A85;
+    --color-mist:     #4A4A45;
+
+    --font-sans:    "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+    --font-display: "Syne", ui-sans-serif, system-ui, sans-serif;
+
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+  }
+
+  /* ===== Component classes — plain CSS ===== */
+  .card-dark {
+    background: #161616;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.40);
+  }
+  .card-dark-hover {
+    background: #161616;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.40);
+    transition: border-color .3s, box-shadow .3s, transform .3s;
+  }
+  .card-dark-hover:hover {
+    border-color: rgba(0,229,160,0.30);
+    box-shadow: 0 0 0 1px rgba(0,229,160,0.30), 0 16px 48px rgba(0,0,0,0.60);
+  }
+  .chip-neon {
+    display: inline-flex; align-items: center; height: 28px; padding: 0 12px;
+    border-radius: 9999px; font-size: 12px; font-weight: 500;
+    background: rgba(0,229,160,0.10); color: #00E5A0;
+    border: 1px solid rgba(0,229,160,0.20);
+  }
+  .chip-muted {
+    display: inline-flex; align-items: center; height: 28px; padding: 0 12px;
+    border-radius: 9999px; font-size: 11px;
+    background: #1E1E1E; color: #8A8A85;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .section-header {
+    font-size: 10px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: #4A4A45;
+  }
+
+  html, body { font-family: "DM Sans", system-ui, sans-serif; }
+  body { background: #0a0a0a; margin: 0; color: #F5F5F0; }
+</style>
+
+<!-- React + Babel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="screens-v2.jsx"></script>
+  <script type="text/babel" src="form-steps-v2.jsx"></script>
+
+  <script type="text/babel">
+    /* ============================================================
+       Frames — Phone + Browser (dark)
+       ============================================================ */
+    function PhoneFrame({ children }) {
+      return (
+        <div className="h-full w-full rounded-[42px] p-2.5" style={{background:"#1a1a1a", boxShadow:"0 20px 60px rgba(0,0,0,0.6)"}}>
+          <div className="h-full w-full rounded-[34px] overflow-hidden relative" style={{background:"#0E0E0E"}}>
+            {/* status bar */}
+            <div className="absolute top-0 left-0 right-0 h-7 flex items-center justify-between px-7 text-[11px] font-semibold text-paper z-10 pointer-events-none">
+              <span>9:41</span>
+              <div className="absolute left-1/2 -translate-x-1/2 top-1.5 h-5 w-24 rounded-full" style={{background:"#000"}}/>
+              <div className="flex items-center gap-1">
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor"><path d="M1 8h2v1H1zM4 6h2v3H4zM7 4h2v5H7zM10 2h2v7h-2z"/></svg>
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" strokeWidth="1"><rect x="0.5" y="2" width="11" height="6" rx="1.2"/><rect x="2" y="3.5" width="7" height="3" fill="currentColor"/><rect x="12" y="4" width="1" height="2"/></svg>
+              </div>
+            </div>
+            <div className="absolute inset-0 pt-7">{children}</div>
+          </div>
+        </div>
+      );
+    }
+
+    function BrowserFrame({ url, children }) {
+      return (
+        <div className="h-full w-full rounded-[12px] overflow-hidden flex flex-col" style={{background:"#161616", boxShadow:"0 20px 60px rgba(0,0,0,0.5)"}}>
+          <div className="h-9 flex items-center gap-2 px-3 border-b" style={{background:"#1a1a1a", borderColor:"rgba(255,255,255,0.06)"}}>
+            <div className="flex gap-1.5">
+              <div className="h-3 w-3 rounded-full" style={{background:"#FF6B6B"}}/>
+              <div className="h-3 w-3 rounded-full" style={{background:"#FFD166"}}/>
+              <div className="h-3 w-3 rounded-full" style={{background:"#00E5A0"}}/>
+            </div>
+            <div className="ml-3 flex-1 h-6 rounded-md flex items-center px-3 text-[11px] font-mono text-mute" style={{background:"#0E0E0E", border:"1px solid rgba(255,255,255,0.06)"}}>{url}</div>
+          </div>
+          <div className="flex-1 overflow-hidden" style={{background:"#0E0E0E"}}>{children}</div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       Canvas
+       ============================================================ */
+    function PerfilTICCanvas() {
+      return (
+        <DesignCanvas title="PerfilTIC · Sistema de diseño" subtitle="Tierra + Neón · Juan Luis Campo Simanca">
+
+          <DCSection id="v2-landing" title="01 · Landing  /  (/)" subtitle="Rediseño Tierra + Neón. Hero asimétrico, card flotante, sticky nav blur.">
+            <DCArtboard id="v2-land-d" label="Desktop · 1280px" width={1280} height={3400}>
+              <BrowserFrame url="perfiltic.co"><LandingV2/></BrowserFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-land-m" label="Mobile · 390px" width={390} height={2400}>
+              <PhoneFrame><LandingV2Mobile/></PhoneFrame>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="v2-perfil" title="02 · Perfil público  /  /[slug]" subtitle="Juan Luis Campo Simanca · Barranquilla. Constelación de habilidades + timelines.">
+            <DCArtboard id="v2-perfil-d" label="Desktop · 1280px" width={1280} height={3200}>
+              <BrowserFrame url="perfiltic.co/juan-campo"><PerfilV2/></BrowserFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-perfil-m" label="Mobile · 390px" width={390} height={2800}>
+              <PhoneFrame><PerfilV2Mobile/></PhoneFrame>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="v2-form" title="03 · Formulario  /  (/crear)" subtitle="Paso 2 — Habilidades TIC. Mobile-first.">
+            <DCArtboard id="v2-form-m1" label="Mobile · paso 2" width={390} height={900}>
+              <PhoneFrame><FormCrearV2 current={2}/></PhoneFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-form-m2" label="Mobile · paso 4" width={390} height={900}>
+              <PhoneFrame><FormCrearV2 current={4}/></PhoneFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-form-m3" label="Mobile · paso 6" width={390} height={900}>
+              <PhoneFrame><FormCrearV2 current={6}/></PhoneFrame>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="v2-step3" title="04 · Paso 3 — Formación y certificados" subtitle="Form 45% + lista 55% en desktop. Empty, list+new, list+edit, mobile.">
+            <DCArtboard id="v2-s3-empty" label="Desktop · vacío"            width={1280} height={1000}>
+              <BrowserFrame url="perfiltic.co/crear?paso=3"><Step3FormacionV2 state="empty"/></BrowserFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-s3-list"  label="Desktop · 2 items + nuevo"    width={1280} height={1000}>
+              <BrowserFrame url="perfiltic.co/crear?paso=3"><Step3FormacionV2 state="list-new"/></BrowserFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-s3-edit"  label="Desktop · 2 items + editando" width={1280} height={1000}>
+              <BrowserFrame url="perfiltic.co/crear?paso=3"><Step3FormacionV2 state="list-edit"/></BrowserFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-s3-mob"   label="Mobile · 1 item + form"         width={390}  height={1100}>
+              <PhoneFrame><Step3FormacionV2 state="list-new" mobile/></PhoneFrame>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="v2-step4" title="05 · Paso 4 — Proyectos" subtitle="Cards generativas + chips neón. Tipo siempre visible.">
+            <DCArtboard id="v2-s4-empty" label="Desktop · vacío"            width={1280} height={1100}>
+              <BrowserFrame url="perfiltic.co/crear?paso=4"><Step4ProyectosV2 state="empty"/></BrowserFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-s4-list"  label="Desktop · 2 items + nuevo"    width={1280} height={1100}>
+              <BrowserFrame url="perfiltic.co/crear?paso=4"><Step4ProyectosV2 state="list-new"/></BrowserFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-s4-edit"  label="Desktop · 2 items + editando" width={1280} height={1100}>
+              <BrowserFrame url="perfiltic.co/crear?paso=4"><Step4ProyectosV2 state="list-edit"/></BrowserFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-s4-mob"   label="Mobile · 1 item + form"         width={390}  height={1200}>
+              <PhoneFrame><Step4ProyectosV2 state="list-new" mobile/></PhoneFrame>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="v2-step5" title="06 · Paso 5 — Experiencia laboral" subtitle="El selector de tipo es protagónico. Banner normaliza experiencia informal.">
+            <DCArtboard id="v2-s5-empty" label="Desktop · vacío"            width={1280} height={1100}>
+              <BrowserFrame url="perfiltic.co/crear?paso=5"><Step5ExperienciaV2 state="empty"/></BrowserFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-s5-list"  label="Desktop · 2 items + nuevo"    width={1280} height={1100}>
+              <BrowserFrame url="perfiltic.co/crear?paso=5"><Step5ExperienciaV2 state="list-new"/></BrowserFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-s5-edit"  label="Desktop · 2 items + editando" width={1280} height={1100}>
+              <BrowserFrame url="perfiltic.co/crear?paso=5"><Step5ExperienciaV2 state="list-edit"/></BrowserFrame>
+            </DCArtboard>
+            <DCArtboard id="v2-s5-mob"   label="Mobile · 1 item + form"         width={390}  height={1200}>
+              <PhoneFrame><Step5ExperienciaV2 state="list-new" mobile/></PhoneFrame>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="v2-cv" title="07 · Preview CV  /  PDF A4" subtitle="Referencia visual del PDF que se descarga — editorial.">
+            <DCArtboard id="v2-cv-a4" label="A4 · 210×297 mm" width={794} height={1123}>
+              <CVPreviewV2/>
+            </DCArtboard>
+          </DCSection>
+
+          <DCPostIt x={40} y={40} w={300}>
+            <b>Sistema · Tierra + Neón</b><br/>
+            #0E0E0E base · #00E5A0 neón · #FFD166 cálido · #FF6B6B coral.<br/>
+            Syne 800 display · DM Sans body · JetBrains Mono.<br/>
+            Neón ≤ 20% de la pantalla. Asimetría intencionada.
+          </DCPostIt>
+
+        </DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<PerfilTICCanvas/>);
+  </script>
+</body>
+</html>

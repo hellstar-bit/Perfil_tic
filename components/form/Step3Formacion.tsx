@@ -142,12 +142,12 @@ function FormacionCard({
           ? "opacity-100 translate-y-0 transition-all duration-200"
           : "opacity-0 translate-y-2",
         isEditing
-          ? "border-brand-500 bg-brand-50"
-          : "hover:border-brand-400 hover:shadow-sm transition-all",
+          ? "border-neon bg-brand-50"
+          : "hover:border-neon/40 hover:shadow-sm transition-all",
       ].join(" ")}
     >
       <div className="flex gap-3 pr-8">
-        <div className="shrink-0 bg-brand-50 text-brand-600 rounded-[8px] p-2 self-start">
+        <div className="shrink-0 bg-brand-50 text-neon rounded-[8px] p-2 self-start">
           <GradIcon size={16} />
         </div>
         <div className="flex-1 min-w-0">
@@ -176,14 +176,14 @@ function FormacionCard({
       <div className="absolute top-3 right-3 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={(e) => { e.stopPropagation(); onEdit(); }}
-          className="h-7 w-7 rounded-md bg-white border border-ink-200 text-ink-500 hover:text-brand-600 hover:border-brand-400 grid place-items-center shadow-xs"
+          className="h-7 w-7 rounded-md bg-ink-200 border border-ink-300 text-ink-500 hover:text-neon hover:border-neon/50 grid place-items-center"
           title="Editar"
         >
           <EditIcon />
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          className="h-7 w-7 rounded-md bg-white border border-ink-200 text-ink-500 hover:text-red-500 hover:border-red-300 grid place-items-center shadow-xs"
+          className="h-7 w-7 rounded-md bg-ink-200 border border-ink-300 text-ink-500 hover:text-coral hover:border-coral/50 grid place-items-center"
           title="Eliminar"
         >
           <TrashIcon />
@@ -280,11 +280,11 @@ export function Step3Formacion({
 
   /* ─── Columna formulario ─── */
   const formCol = (
-    <div className="bg-white rounded-xl border border-ink-200 shadow-sm p-5 space-y-4">
+    <div className="card rounded-xl p-5 space-y-4">
       {/* Header del panel */}
       <div className="flex items-center justify-between pb-3 border-b border-ink-100">
         <div className="flex items-center gap-2.5">
-          <div className={`h-7 w-7 rounded-lg grid place-items-center ${form.editandoId ? "bg-brand-100 text-brand-600" : "bg-brand-600 text-white"}`}>
+          <div className={`h-7 w-7 rounded-lg grid place-items-center ${form.editandoId ? "bg-brand-50 text-neon" : "bg-neon text-noir"}`}>
             <GradIcon size={14} />
           </div>
           <h3 className="text-sm font-semibold text-ink-900">
@@ -448,10 +448,10 @@ export function Step3Formacion({
 
   /* ─── Columna lista ─── */
   const listaCol = (
-    <div className="bg-ink-50 rounded-xl border border-ink-100 p-5 flex flex-col min-h-[420px]">
+    <div className="bg-ink-100 rounded-xl border border-ink-200 p-5 flex flex-col min-h-[420px]">
       {formaciones.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-1 text-center gap-1">
-          <div className="h-14 w-14 rounded-2xl bg-white border border-ink-200 grid place-items-center text-brand-300 shadow-xs mx-auto">
+          <div className="h-14 w-14 rounded-2xl bg-ink-200 border border-ink-300 grid place-items-center text-neon/40 mx-auto">
             <GradIcon size={28} />
           </div>
           <p className="mt-3 font-medium text-[14px] text-ink-700">Tus formaciones aparecerán aquí</p>
@@ -465,7 +465,7 @@ export function Step3Formacion({
             <span className="text-[11px] font-medium uppercase tracking-wider text-ink-500">
               Guardadas
             </span>
-            <span className="text-[11px] font-semibold text-brand-700 bg-brand-50 border border-brand-100 px-2 py-0.5 rounded-full">
+            <span className="text-[11px] font-semibold text-neon bg-brand-50 border border-neon/20 px-2 py-0.5 rounded-full">
               {formaciones.length} / 6
             </span>
           </div>

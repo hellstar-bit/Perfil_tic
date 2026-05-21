@@ -11,7 +11,7 @@ export function FormHeader({ mode, newTitle, editTitle, onCancel }: Props) {
   return (
     <div className="flex items-center justify-between mb-5">
       <div>
-        <div className={`text-[10px] font-medium uppercase tracking-wider ${mode === "edit" ? "text-brand-500" : "text-brand-700"}`}>
+        <div className={`text-[10px] font-medium uppercase tracking-wider ${mode === "edit" ? "text-neon" : "text-mute"}`}>
           {mode === "edit" ? "Editando" : "Nuevo registro"}
         </div>
         <h2 className="mt-0.5 text-[20px] font-semibold leading-tight">

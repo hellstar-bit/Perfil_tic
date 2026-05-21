@@ -13,28 +13,27 @@ import { SavedCard } from "../shared/SavedCard";
 const ANOS = Array.from({ length: 36 }, (_, i) => String(2026 - i));
 
 const TIPOS_EXP = [
-  { v: "empleo",        l: "Empleo formal",           d: "Contrato laboral",        e: "💼" },
-  { v: "obra",          l: "Contrato por obra",        d: "Proyecto específico",     e: "📋" },
-  { v: "sena",          l: "Práctica SENA",            d: "Contrato de aprendizaje", e: "🎓" },
-  { v: "universidad",   l: "Práctica universitaria",   d: "Convenio académico",      e: "🏛️" },
-  { v: "voluntariado",  l: "Voluntariado",             d: "Sin remuneración",        e: "🤝" },
-  { v: "comunitario",   l: "Trabajo comunitario",      d: "Apoyo a la comunidad",    e: "👥" },
-  { v: "freelance",     l: "Freelance",                d: "Trabajo independiente",   e: "💻" },
-  { v: "negocio",       l: "Negocio propio",           d: "Emprendimiento",          e: "🏠" },
+  { v: "empleo",       l: "Empleo formal",         d: "Contrato laboral",        icon: Icons.Work },
+  { v: "obra",         l: "Contrato por obra",      d: "Proyecto específico",     icon: Icons.Clipboard },
+  { v: "sena",         l: "Práctica SENA",          d: "Contrato de aprendizaje", icon: Icons.GradCap },
+  { v: "universidad",  l: "Práctica universitaria", d: "Convenio académico",      icon: Icons.Building },
+  { v: "voluntariado", l: "Voluntariado",           d: "Sin remuneración",        icon: Icons.Heart },
+  { v: "comunitario",  l: "Trabajo comunitario",    d: "Apoyo a la comunidad",    icon: Icons.Users },
+  { v: "freelance",    l: "Freelance",              d: "Trabajo independiente",   icon: Icons.Terminal },
+  { v: "negocio",      l: "Negocio propio",         d: "Emprendimiento",          icon: Icons.Store },
 ];
 
 interface Campos {
   cargo: string;
   empresa: string;
   tipo: string;
-  emoji: string;
   inicio: string;
   fin: string;
   descripcion: string;
 }
 
 const BLANK: Campos = {
-  cargo: "", empresa: "", tipo: "empleo", emoji: "💼",
+  cargo: "", empresa: "", tipo: "empleo",
   inicio: "", fin: "", descripcion: "",
 };
 
@@ -56,16 +55,23 @@ function ExperienciaCard({
   return (
     <SavedCard active={active} deleting={deleting} onEdit={onEdit} onDelete={onDelete}>
       <div className="p-4 pr-24 flex gap-3.5">
-        <div className={`h-12 w-12 shrink-0 rounded-[10px] grid place-items-center text-2xl
-          ${active ? "bg-white border border-brand-200" : "bg-brand-50"}`}>
-          <span>{item.emoji || tipoMeta?.e}</span>
+        <div
+          className="h-12 w-12 shrink-0 rounded-[10px] grid place-items-center"
+          style={{
+            background: active ? "rgba(0,229,160,0.08)" : "rgba(0,229,160,0.05)",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: active ? "rgba(0,229,160,0.30)" : "rgba(0,229,160,0.12)",
+          }}
+        >
+          {tipoMeta && <tipoMeta.icon width="22" height="22" className={active ? "text-neon" : "text-ink-500"} />}
         </div>
         <div className="min-w-0 flex-1">
           <div className="font-semibold text-[14px] leading-tight text-ink-900">{item.cargo}</div>
           <div className="text-[12px] text-ink-600 mt-0.5 truncate">{item.empresa}</div>
           <div className="flex items-center gap-2 mt-2 flex-wrap">
-            <span className="text-[10px] px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 font-medium border border-brand-100">
-              {tipoMeta?.e} {tipoMeta?.l}
+            <span className="text-[10px] px-2 py-0.5 rounded-md bg-brand-50 text-neon font-medium border border-neon/20 inline-flex items-center gap-1">
+              {tipoMeta && <tipoMeta.icon width="10" height="10" />} {tipoMeta?.l}
             </span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-ink-50 border border-ink-200 text-ink-600">
               {item.inicio} — {item.fin}
@@ -91,13 +97,13 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
   };
 
   const seleccionarTipo = (tipo: typeof TIPOS_EXP[number]) => {
-    setCampos((p) => ({ ...p, tipo: tipo.v, emoji: tipo.e }));
+    setCampos((p) => ({ ...p, tipo: tipo.v }));
     setErrores((p) => ({ ...p, tipo: "" }));
   };
 
   const editarItem = (item: Experiencia) => {
     setEditandoId(item.id);
-    setCampos({ cargo: item.cargo, empresa: item.empresa, tipo: item.tipo, emoji: item.emoji,
+    setCampos({ cargo: item.cargo, empresa: item.empresa, tipo: item.tipo,
       inicio: item.inicio, fin: item.fin, descripcion: item.descripcion });
     setErrores({});
   };
@@ -123,7 +129,7 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
       cargo: campos.cargo.trim(),
       empresa: campos.empresa.trim(),
       tipo: campos.tipo,
-      emoji: campos.emoji || tipoMeta?.e || "",
+      emoji: "",
       inicio: campos.inicio,
       fin: campos.fin,
       descripcion: campos.descripcion.trim(),
@@ -159,10 +165,10 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
         <div className="md:max-w-[1200px] md:mx-auto">
 
           {/* Banner */}
-          <div className="rounded-[10px] bg-brand-50 border border-brand-100 p-4 flex gap-3 mb-6">
-            <div className="text-brand-600 shrink-0 mt-0.5"><Icons.Sparkle /></div>
-            <div className="text-[13px] text-brand-800 leading-relaxed">
-              <b>La experiencia informal también cuenta.</b> Los reclutadores de PerfilTIC valoran el trabajo comunitario, las prácticas y los proyectos propios igual que un empleo formal.
+          <div className="rounded-[10px] bg-brand-50 p-4 flex gap-3 mb-6" style={{ border: "1px solid rgba(0,229,160,0.15)" }}>
+            <div className="text-neon shrink-0 mt-0.5"><Icons.Sparkle /></div>
+            <div className="text-[13px] text-ink-700 leading-relaxed">
+              <b className="text-neon font-semibold">La experiencia informal también cuenta.</b> Los reclutadores de PerfilTIC valoran el trabajo comunitario, las prácticas y los proyectos propios igual que un empleo formal.
             </div>
           </div>
 
@@ -229,14 +235,21 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
                         key={t.v}
                         type="button"
                         onClick={() => seleccionarTipo(t)}
-                        className={`flex items-start gap-2.5 px-3 py-2.5 rounded-[8px] border text-left transition-colors
+                        className={`flex items-start gap-2.5 px-3 py-2.5 rounded-[8px] text-left transition-colors
                           ${campos.tipo === t.v
-                            ? "border-brand-500 bg-brand-50 ring-2 ring-brand-500/30"
-                            : "border-ink-200 bg-white hover:border-ink-300"}`}
+                            ? "bg-brand-50 ring-1 ring-neon/40"
+                            : "bg-ink-100 hover:bg-ink-200"}`}
+                        style={{
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          borderColor: campos.tipo === t.v ? "rgba(0,229,160,0.35)" : "rgba(255,255,255,0.07)",
+                        }}
                       >
-                        <span className="text-lg leading-none mt-0.5">{t.e}</span>
+                        <span className={`shrink-0 mt-0.5 ${campos.tipo === t.v ? "text-neon" : "text-ink-500"}`}>
+                          <t.icon width="15" height="15" />
+                        </span>
                         <div className="min-w-0">
-                          <div className={`text-[12px] font-semibold leading-tight ${campos.tipo === t.v ? "text-brand-700" : "text-ink-800"}`}>
+                          <div className={`text-[12px] font-semibold leading-tight ${campos.tipo === t.v ? "text-neon" : "text-ink-800"}`}>
                             {t.l}
                           </div>
                           <div className="text-[10px] text-ink-500 mt-0.5">{t.d}</div>
@@ -250,33 +263,27 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <FieldLabel>Año inicio</FieldLabel>
-                    <div className="relative">
-                      <select
-                        className={`field appearance-none pr-9 ${errores.inicio ? "border-red-400" : ""}`}
-                        value={campos.inicio}
-                        onChange={(e) => set("inicio", e.target.value)}
-                      >
-                        <option value="">Año</option>
-                        {ANOS.map((a) => <option key={a}>{a}</option>)}
-                      </select>
-                      <Icons.Chevron className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
-                    </div>
+                    <select
+                      className={`field ${errores.inicio ? "border-red-400" : ""}`}
+                      value={campos.inicio}
+                      onChange={(e) => set("inicio", e.target.value)}
+                    >
+                      <option value="">Año</option>
+                      {ANOS.map((a) => <option key={a}>{a}</option>)}
+                    </select>
                     {errores.inicio && <p className="mt-1 text-xs text-red-600">{errores.inicio}</p>}
                   </div>
                   <div>
                     <FieldLabel>Año fin</FieldLabel>
-                    <div className="relative">
-                      <select
-                        className={`field appearance-none pr-9 ${errores.fin ? "border-red-400" : ""}`}
-                        value={campos.fin}
-                        onChange={(e) => set("fin", e.target.value)}
-                      >
-                        <option value="">Año</option>
-                        <option>Actualidad</option>
-                        {ANOS.map((a) => <option key={a}>{a}</option>)}
-                      </select>
-                      <Icons.Chevron className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
-                    </div>
+                    <select
+                      className={`field ${errores.fin ? "border-red-400" : ""}`}
+                      value={campos.fin}
+                      onChange={(e) => set("fin", e.target.value)}
+                    >
+                      <option value="">Año</option>
+                      <option>Actualidad</option>
+                      {ANOS.map((a) => <option key={a}>{a}</option>)}
+                    </select>
                     {errores.fin && <p className="mt-1 text-xs text-red-600">{errores.fin}</p>}
                   </div>
                 </div>
@@ -285,7 +292,7 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
                   <FieldLabel>Descripción</FieldLabel>
                   <div className="relative">
                     <textarea
-                      className={`w-full px-3 py-2.5 rounded-[6px] border bg-white text-ink-900 placeholder:text-ink-400 outline-none focus:border-brand-500 resize-none min-h-[112px] text-sm leading-relaxed
+                      className={`w-full px-3 py-2.5 rounded-[6px] border bg-ink-100 text-ink-900 placeholder:text-ink-500 outline-none focus:border-neon resize-none min-h-[112px] text-sm leading-relaxed
                         ${errores.descripcion ? "border-red-400" : "border-ink-200"}`}
                       value={campos.descripcion}
                       onChange={(e) => set("descripcion", e.target.value)}
@@ -302,7 +309,7 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
                 <button
                   onClick={guardar}
                   disabled={maximo}
-                  className="inline-flex items-center gap-2 h-11 px-5 rounded-[8px] bg-brand-600 text-white font-medium text-sm hover:bg-brand-700 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 h-11 px-5 rounded-[8px] bg-neon text-noir font-semibold text-sm hover:brightness-90 disabled:opacity-50"
                 >
                   {editandoId ? <><Icons.Check /> Guardar cambios</> : <><Icons.Plus /> Agregar experiencia</>}
                 </button>
@@ -317,7 +324,7 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
             {/* Lista (desktop) */}
             <div className="hidden md:block">
               <div className="mb-4">
-                <h3 className="text-[11px] font-medium uppercase tracking-wider text-brand-700">Tu experiencia</h3>
+                <h3 className="text-[11px] font-medium uppercase tracking-wider text-neon">Tu experiencia</h3>
                 <div className="mt-0.5 text-[12px] text-ink-500">{items.length} de 6 — empieza por la más reciente</div>
               </div>
               {items.length === 0 ? (

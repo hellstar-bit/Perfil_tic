@@ -67,9 +67,9 @@ export function LocationSelect({ departamento, municipio, onChange }: LocationSe
     departamentos.find((d) => d.nombre === departamento)?.codigo ?? "";
 
   return (
-    <div className="grid grid-cols-1 gap-3">
+    <div className="grid grid-cols-2 gap-3">
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-ink-700">Departamento *</label>
+        <label className="text-[11px] font-medium text-ink-600 tracking-wide">Departamento *</label>
         <select
           className="field"
           value={selectedCodigo}
@@ -78,7 +78,7 @@ export function LocationSelect({ departamento, municipio, onChange }: LocationSe
           disabled={loadingDeps}
         >
           <option value="">
-            {loadingDeps ? "Cargando departamentos…" : "Selecciona tu departamento"}
+            {loadingDeps ? "Cargando…" : "Departamento"}
           </option>
           {departamentos.map((d) => (
             <option key={d.codigo} value={d.codigo}>
@@ -89,20 +89,16 @@ export function LocationSelect({ departamento, municipio, onChange }: LocationSe
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-ink-700">Municipio *</label>
+        <label className="text-[11px] font-medium text-ink-600 tracking-wide">Municipio *</label>
         <select
-          className={`field ${!departamento ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`field ${!departamento ? "opacity-40 cursor-not-allowed" : ""}`}
           value={municipio}
           onChange={(e) => onChange("municipio", e.target.value)}
           disabled={!departamento || loadingMuns}
           required
         >
           <option value="">
-            {loadingMuns
-              ? "Cargando municipios…"
-              : departamento
-              ? "Selecciona tu municipio"
-              : "Primero elige un departamento"}
+            {loadingMuns ? "Cargando…" : departamento ? "Municipio" : "— elige depto —"}
           </option>
           {municipios.map((m) => (
             <option key={m.codigo} value={m.nombre}>

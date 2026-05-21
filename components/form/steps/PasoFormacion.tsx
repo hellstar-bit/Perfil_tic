@@ -48,7 +48,7 @@ function FormacionCard({
     <SavedCard active={active} deleting={deleting} onEdit={onEdit} onDelete={onDelete}>
       <div className="p-4 pr-24 flex gap-3.5">
         <div className={`h-12 w-12 shrink-0 rounded-[10px] grid place-items-center
-          ${active ? "bg-white text-brand-600 border border-brand-200" : "bg-brand-50 text-brand-700"}`}>
+          ${active ? "bg-ink-200 text-neon border border-neon/30" : "bg-brand-50 text-neon"}`}>
           <Icons.Cap />
         </div>
         <div className="min-w-0 flex-1">
@@ -59,7 +59,7 @@ function FormacionCard({
               {item.inicio} — {item.fin}
             </span>
             {item.cert && (
-              <span className="text-[10px] px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 font-medium inline-flex items-center gap-1 border border-brand-100">
+              <span className="text-[10px] px-2 py-0.5 rounded-md bg-brand-50 text-neon font-medium inline-flex items-center gap-1 border border-neon/20">
                 <Icons.Link /> Ver certificado
               </span>
             )}
@@ -209,8 +209,8 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
                   />
                   <Icons.Search className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400" />
                   {showSuggest && sugerencias.length > 0 && (
-                    <div className="absolute top-12 left-0 right-0 bg-white border border-ink-200 rounded-[8px] shadow-lg z-10 overflow-hidden">
-                      <div className="px-3 py-2 text-[10px] font-medium uppercase tracking-wider text-ink-500 bg-ink-50">
+                    <div className="absolute top-12 left-0 right-0 bg-ink-100 border border-ink-200 rounded-[8px] shadow-lg z-10 overflow-hidden">
+                      <div className="px-3 py-2 text-[10px] font-medium uppercase tracking-wider text-ink-500 bg-ink-200">
                         Sugerencias
                       </div>
                       {sugerencias.map((inst, idx) => (
@@ -218,7 +218,7 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
                           key={inst}
                           type="button"
                           onMouseDown={() => { set("institucion", inst); setShowSuggest(false); }}
-                          className={`w-full text-left px-3 py-2 text-sm flex items-center justify-between ${idx === 0 ? "bg-brand-50 text-brand-700" : "hover:bg-ink-50"}`}
+                          className={`w-full text-left px-3 py-2 text-sm flex items-center justify-between ${idx === 0 ? "bg-ink-200 text-neon" : "hover:bg-ink-200"}`}
                         >
                           <span>{inst}</span>
                           {idx === 0 && <span className="text-[10px] text-ink-400">↵</span>}
@@ -299,7 +299,7 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
               <button
                 onClick={guardar}
                 disabled={maximo}
-                className="inline-flex items-center gap-2 h-11 px-5 rounded-[8px] bg-brand-600 text-white font-medium text-sm hover:bg-brand-700 disabled:opacity-50"
+                className="inline-flex items-center gap-2 h-11 px-5 rounded-[8px] bg-neon text-noir font-semibold text-sm hover:brightness-90 disabled:opacity-50"
               >
                 {editandoId ? <><Icons.Check /> Guardar cambios</> : <><Icons.Plus /> Agregar formación</>}
               </button>
@@ -315,7 +315,7 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
           <div className="hidden md:block">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-[11px] font-medium uppercase tracking-wider text-brand-700">Tus formaciones</h3>
+                <h3 className="text-[11px] font-medium uppercase tracking-wider text-neon">Tus formaciones</h3>
                 <div className="mt-0.5 text-[12px] text-ink-500">{items.length} de 6 — puedes agregar hasta 6</div>
               </div>
             </div>

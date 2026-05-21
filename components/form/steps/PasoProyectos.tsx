@@ -69,7 +69,7 @@ function ProyectoCard({
             <div className="font-mono font-semibold text-2xl text-ink-700/40">{item.iniciales}</div>
           </div>
         )}
-        <div className="absolute top-3 left-3 inline-flex items-center px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-sm text-[10px] font-medium text-ink-700 border border-ink-200">
+        <div className="absolute top-3 left-3 inline-flex items-center px-2 py-0.5 rounded-md bg-ink-100/90 backdrop-blur-sm text-[10px] font-medium text-ink-700 border border-ink-200">
           {item.tipo}
         </div>
       </div>
@@ -84,7 +84,7 @@ function ProyectoCard({
             <span className="text-[10px] px-2 py-0.5 rounded-md text-ink-500">+{item.tecnologias.length - 3} más</span>
           )}
           {item.url && (
-            <span className="ml-auto text-[10px] px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 font-medium inline-flex items-center gap-1 border border-brand-100">
+            <span className="ml-auto text-[10px] px-2 py-0.5 rounded-md bg-brand-50 text-neon font-medium inline-flex items-center gap-1 border border-neon/20">
               <Icons.Link /> Ver proyecto
             </span>
           )}
@@ -242,7 +242,7 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
                 <FieldLabel>Descripción</FieldLabel>
                 <div className="relative">
                   <textarea
-                    className={`w-full px-3 py-2.5 rounded-[6px] border bg-white text-ink-900 placeholder:text-ink-400 outline-none focus:border-brand-500 resize-none min-h-[88px] text-sm leading-relaxed
+                    className={`w-full px-3 py-2.5 rounded-[6px] border bg-ink-100 text-ink-900 placeholder:text-ink-500 outline-none focus:border-neon resize-none min-h-[88px] text-sm leading-relaxed
                       ${errores.descripcion ? "border-red-400" : "border-ink-200"}`}
                     value={campos.descripcion}
                     onChange={(e) => set("descripcion", e.target.value)}
@@ -264,8 +264,8 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
                       onClick={() => set("tipo", t)}
                       className={`h-10 px-2 rounded-[6px] text-[12px] font-medium border transition-colors
                         ${campos.tipo === t
-                          ? "bg-brand-600 text-white border-brand-600"
-                          : "bg-white text-ink-700 border-ink-200 hover:border-ink-300"}`}
+                          ? "bg-neon text-noir border-neon"
+                          : "bg-ink-100 text-ink-900 border-ink-200 hover:border-ink-300"}`}
                     >
                       {t}
                     </button>
@@ -275,12 +275,12 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
 
               <div>
                 <FieldLabel optional hint={`${campos.tecnologias.length}/5`}>Tecnologías usadas</FieldLabel>
-                <div className="rounded-[8px] border border-ink-200 bg-white p-2">
+                <div className="rounded-[8px] border border-ink-200 bg-ink-100 p-2">
                   <div className="flex flex-wrap gap-1.5 mb-2">
                     {campos.tecnologias.map((t) => (
-                      <span key={t} className="inline-flex items-center gap-1 h-7 pl-3 pr-1 rounded-full bg-brand-600 text-white text-xs font-medium">
+                      <span key={t} className="inline-flex items-center gap-1 h-7 pl-3 pr-1 rounded-full bg-neon text-noir text-xs font-semibold">
                         {t}
-                        <button type="button" onClick={() => toggleTec(t)} className="h-5 w-5 grid place-items-center rounded-full hover:bg-white/15">
+                        <button type="button" onClick={() => toggleTec(t)} className="h-5 w-5 grid place-items-center rounded-full hover:bg-noir/20">
                           <Icons.X width={12} height={12} />
                         </button>
                       </span>
@@ -297,7 +297,7 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
                       <div className="flex flex-wrap gap-1.5">
                         {techsRestantes.map((t) => (
                           <button key={t} type="button" onClick={() => toggleTec(t)}
-                            className="h-7 px-3 rounded-full text-xs font-medium bg-ink-50 text-ink-700 hover:bg-brand-50 hover:text-brand-700">
+                            className="h-7 px-3 rounded-full text-xs font-medium bg-ink-200 text-ink-700 hover:bg-brand-50 hover:text-neon">
                             {t}
                           </button>
                         ))}
@@ -329,7 +329,7 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
                     <img src={campos.imagen} alt="preview" className="h-20 mx-auto object-contain rounded" />
                   ) : (
                     <>
-                      <div className="inline-flex h-10 w-10 rounded-full bg-white border border-ink-200 items-center justify-center text-ink-500 mb-2">
+                      <div className="inline-flex h-10 w-10 rounded-full bg-ink-100 border border-ink-200 items-center justify-center text-ink-500 mb-2">
                         <Icons.Upload />
                       </div>
                       <div className="text-[13px] font-medium text-ink-700">Arrastra o haz click para subir</div>
@@ -346,7 +346,7 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
               <button
                 onClick={guardar}
                 disabled={maximo}
-                className="inline-flex items-center gap-2 h-11 px-5 rounded-[8px] bg-brand-600 text-white font-medium text-sm hover:bg-brand-700 disabled:opacity-50"
+                className="inline-flex items-center gap-2 h-11 px-5 rounded-[8px] bg-neon text-noir font-semibold text-sm hover:brightness-90 disabled:opacity-50"
               >
                 {editandoId ? <><Icons.Check /> Guardar cambios</> : <><Icons.Plus /> Agregar proyecto</>}
               </button>
@@ -361,7 +361,7 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
           {/* Lista (desktop) */}
           <div className="hidden md:block">
             <div className="mb-4">
-              <h3 className="text-[11px] font-medium uppercase tracking-wider text-brand-700">Tus proyectos</h3>
+              <h3 className="text-[11px] font-medium uppercase tracking-wider text-neon">Tus proyectos</h3>
               <div className="mt-0.5 text-[12px] text-ink-500">{items.length} de 6 — destaca los que más te enorgullecen</div>
             </div>
             {items.length === 0 ? (

@@ -11,7 +11,7 @@ interface Props {
 
 export function StepFooter({ onBack, onNext, nextLabel = "Siguiente", emptyHint }: Props) {
   return (
-    <footer className="bg-white border-t border-ink-100 shrink-0">
+    <footer className="bg-ink-50 border-t border-ink-200 shrink-0">
       {emptyHint && (
         <div className="px-5 pt-3 md:px-10">
           <p className="bg-ink-50 border border-ink-200 text-ink-600 text-sm p-3 rounded-[8px]">
@@ -31,7 +31,7 @@ export function StepFooter({ onBack, onNext, nextLabel = "Siguiente", emptyHint 
         </div>
         <button
           onClick={onNext}
-          className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-[8px] bg-brand-600 text-white font-medium text-sm hover:bg-brand-700 flex-[1.4] md:flex-initial md:min-w-[180px]"
+          className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-[8px] bg-neon text-noir font-semibold text-sm hover:brightness-90 flex-[1.4] md:flex-initial md:min-w-[180px]"
         >
           {nextLabel} <Icons.Arrow />
         </button>
