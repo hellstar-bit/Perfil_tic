@@ -5,6 +5,7 @@ import type { Proyecto } from "@/types/perfil";
 import { HABILIDADES_TIC } from "@/lib/habilidades";
 import { Icons } from "../shared/Icons";
 import { StepTopBar } from "../shared/StepTopBar";
+import { StepSidebar } from "../shared/StepSidebar";
 import { StepFooter } from "../shared/StepFooter";
 import { FieldLabel } from "../shared/FieldLabel";
 import { FormHeader } from "../shared/FormHeader";
@@ -189,7 +190,9 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
   const techsRestantes = TECHS_DISPLAY.filter((t) => !campos.tecnologias.includes(t));
 
   return (
-    <div className="h-dvh w-full bg-ink-50 font-sans text-ink-900 flex flex-col">
+    <div className="h-dvh w-full flex">
+      <StepSidebar current={4} onSalir={onSalir} />
+      <div className="flex flex-col flex-1 min-w-0 bg-ink-50 font-sans text-ink-900">
       <StepTopBar current={4} label="Proyectos" onBack={onBack} onSalir={onSalir} />
 
       <main className="flex-1 overflow-y-auto px-5 py-5 md:px-10 md:py-8">
@@ -387,6 +390,7 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
         onNext={onNext}
         emptyHint={items.length === 0 ? "Puedes continuar sin agregar proyectos. Siempre podrás editarlo desde tu perfil." : undefined}
       />
+      </div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Experiencia } from "@/types/perfil";
 import { Icons } from "../shared/Icons";
 import { StepTopBar } from "../shared/StepTopBar";
+import { StepSidebar } from "../shared/StepSidebar";
 import { StepFooter } from "../shared/StepFooter";
 import { FieldLabel } from "../shared/FieldLabel";
 import { FormHeader } from "../shared/FormHeader";
@@ -158,7 +159,9 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
   const editandoItem = items.find((ex) => ex.id === editandoId);
 
   return (
-    <div className="h-dvh w-full bg-ink-50 font-sans text-ink-900 flex flex-col">
+    <div className="h-dvh w-full flex">
+      <StepSidebar current={5} onSalir={onSalir} />
+      <div className="flex flex-col flex-1 min-w-0 bg-ink-50 font-sans text-ink-900">
       <StepTopBar current={5} label="Experiencia laboral" onBack={onBack} onSalir={onSalir} />
 
       <main className="flex-1 overflow-y-auto px-5 py-5 md:px-10 md:py-8">
@@ -352,6 +355,7 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
         nextLabel="Siguiente"
         emptyHint={items.length === 0 ? "Puedes continuar sin agregar experiencia. Siempre podrás editarlo desde tu perfil." : undefined}
       />
+      </div>
     </div>
   );
 }

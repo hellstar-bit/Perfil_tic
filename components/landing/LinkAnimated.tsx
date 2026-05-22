@@ -88,8 +88,10 @@ export function LinkAnimated() {
       <div
         style={{
           borderRadius: 8,
-          border: "1px solid rgba(255,255,255,0.10)",
-          background: "rgba(255,255,255,0.05)",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: copied ? "rgba(0,229,160,0.35)" : "rgba(255,255,255,0.10)",
+          background: copied ? "rgba(0,229,160,0.07)" : "rgba(255,255,255,0.05)",
           padding: "9px 14px",
           fontFamily: "monospace",
           fontSize: 13,
@@ -97,10 +99,6 @@ export function LinkAnimated() {
           alignItems: "center",
           minHeight: 38,
           transition: "border-color 0.3s, background 0.3s",
-          ...(copied && {
-            borderColor: "rgba(0,229,160,0.35)",
-            background: "rgba(0,229,160,0.07)",
-          }),
         }}
       >
         {copied ? (

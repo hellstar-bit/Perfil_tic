@@ -9,6 +9,7 @@ import { PasoProyectos } from "@/components/form/steps/PasoProyectos";
 import { PasoExperiencia } from "@/components/form/steps/PasoExperiencia";
 import { PALETA } from "@/lib/paleta";
 import type { Formacion, Proyecto, Experiencia } from "@/types/perfil";
+import { StepSidebar } from "@/components/form/shared/StepSidebar";
 
 /* ─── Types ─── */
 type Habilidad = { nombre: string; nivel: number };
@@ -447,74 +448,61 @@ export default function CrearPage() {
   const stepLabel = STEPS[step - 1]?.label ?? "";
 
   return (
-    <div className="min-h-dvh bg-ink-50 font-sans text-ink-900 flex flex-col">
-      <header className="px-5 pt-5 pb-3 bg-ink-50 border-b border-ink-200">
-        <div className="flex items-center justify-between">
+    <div className="h-dvh flex font-sans text-ink-900">
+      <StepSidebar current={step} onSalir={salir} />
+      <div className="flex flex-col flex-1 min-w-0 bg-ink-50">
+        {/* Mobile top strip */}
+        <header className="md:hidden px-4 py-3 bg-ink-50 border-b border-ink-200 flex items-center justify-between shrink-0">
           <button onClick={() => step > 1 ? setStep((s) => s - 1) : router.push("/")}
-            className="text-ink-700 -ml-1 h-9 w-9 grid place-items-center rounded-md hover:bg-ink-50">
+            className="text-ink-700 -ml-1 h-9 w-9 grid place-items-center rounded-md">
             <Back />
           </button>
-          <Logo />
+          <div className="flex flex-col items-center">
+            <span className="text-[11px] font-medium text-ink-500">Paso {step} de {STEPS.length}</span>
+            <span className="text-[13px] font-semibold text-neon leading-tight">{stepLabel}</span>
+          </div>
           <button onClick={salir} className="text-xs font-medium text-ink-500">Salir</button>
+        </header>
+        <div className="md:hidden h-0.5 bg-ink-100 shrink-0">
+          <div className="h-full bg-neon transition-all duration-300" style={{ width: `${pct}%` }} />
         </div>
 
-        <div className="mt-4">
-          <div className="flex items-center justify-between text-[11px] font-medium text-ink-500 mb-2">
-            <span>Paso {step} de {STEPS.length}</span>
-            <span className="text-neon">{stepLabel}</span>
+        <main className="flex-1 overflow-y-auto">
+          <div className="py-6 px-5 max-w-lg mx-auto w-full">
+            <div className="text-xs font-medium uppercase tracking-wider text-neon">Paso {step}</div>
+            <h1 className="mt-1 text-[24px] leading-tight font-semibold">
+              {step === 1 && "Información personal"}
+              {step === 2 && "¿Qué herramientas TIC manejas?"}
+              {step === 6 && "Vista previa"}
+            </h1>
+            {step === 6 && <p className="mt-2 text-[14px] text-ink-600">Revisa que todo esté correcto antes de publicar tu perfil.</p>}
+            <div className="mt-5">
+              {step === 1 && <Step1 state={state} dispatch={dispatch} />}
+              {step === 2 && <Step2 state={state} dispatch={dispatch} />}
+              {step === 6 && <Step6 state={state} dispatch={dispatch} />}
+            </div>
+            {error && <p className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">{error}</p>}
           </div>
-          <div className="h-1.5 w-full bg-ink-100 rounded-full overflow-hidden">
-            <div className="h-full bg-brand-500 rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
-          </div>
-          <div className="mt-3 grid grid-cols-6 gap-1">
-            {STEPS.map((s) => (
-              <div key={s.n} className="flex flex-col items-center gap-1">
-                <div className={`h-7 w-7 rounded-full grid place-items-center text-[11px] font-semibold
-                  ${s.n < step ? "bg-neon text-noir" :
-                    s.n === step ? "bg-brand-50 text-neon ring-2 ring-neon" :
-                    "bg-ink-100 text-ink-400"}`}>
-                  {s.n < step ? <Check /> : s.n}
-                </div>
-                <div className={`text-[9px] leading-none truncate w-full text-center ${s.n === step ? "text-neon font-medium" : "text-ink-400"}`}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </header>
+        </main>
 
-      <main className="flex-1 overflow-y-auto py-6 px-5 max-w-lg mx-auto w-full">
-        <div className="text-xs font-medium uppercase tracking-wider text-neon">Paso {step}</div>
-        <h1 className="mt-1 text-[24px] leading-tight font-semibold">
-          {step === 1 && "Información personal"}
-          {step === 2 && "¿Qué herramientas TIC manejas?"}
-          {step === 6 && "Vista previa"}
-        </h1>
-        {step === 6 && <p className="mt-2 text-[14px] text-ink-600">Revisa que todo esté correcto antes de publicar tu perfil.</p>}
-        <div className="mt-5">
-          {step === 1 && <Step1 state={state} dispatch={dispatch} />}
-          {step === 2 && <Step2 state={state} dispatch={dispatch} />}
-          {step === 6 && <Step6 state={state} dispatch={dispatch} />}
-        </div>
-        {error && <p className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">{error}</p>}
-      </main>
-
-      <footer className="bg-ink-50 border-t border-ink-200 px-5 py-3 flex gap-3 items-center max-w-lg mx-auto w-full">
-        {step > 1 && (
-          <button onClick={() => setStep((s) => s - 1)} className="btn-outline h-12 flex-1 gap-2">
-            <Back /> Anterior
-          </button>
-        )}
-        {step < 6 ? (
-          <button onClick={() => canAdvance() && setStep((s) => s + 1)}
-            className={`btn-primary h-12 flex-[1.4] gap-2 ${!canAdvance() ? "opacity-50 cursor-not-allowed" : ""}`}>
-            Siguiente <Arrow />
-          </button>
-        ) : (
-          <button onClick={publish} disabled={submitting} className="btn-primary h-12 flex-[1.4] gap-2 disabled:opacity-50">
-            <Eye /> {submitting ? "Publicando..." : "Publicar perfil"}
-          </button>
-        )}
-      </footer>
+        <footer className="border-t border-ink-200 px-5 py-3 flex gap-3 items-center max-w-lg mx-auto w-full shrink-0">
+          {step > 1 && (
+            <button onClick={() => setStep((s) => s - 1)} className="btn-outline h-12 flex-1 gap-2">
+              <Back /> Anterior
+            </button>
+          )}
+          {step < 6 ? (
+            <button onClick={() => canAdvance() && setStep((s) => s + 1)}
+              className={`btn-primary h-12 flex-[1.4] gap-2 ${!canAdvance() ? "opacity-50 cursor-not-allowed" : ""}`}>
+              Siguiente <Arrow />
+            </button>
+          ) : (
+            <button onClick={publish} disabled={submitting} className="btn-primary h-12 flex-[1.4] gap-2 disabled:opacity-50">
+              <Eye /> {submitting ? "Publicando..." : "Publicar perfil"}
+            </button>
+          )}
+        </footer>
+      </div>
     </div>
   );
 }
