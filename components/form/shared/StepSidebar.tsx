@@ -63,8 +63,8 @@ export function StepSidebar({ current, onSalir }: Props) {
         </div>
       </div>
 
-      {/* Steps — fill remaining vertical space */}
-      <div className="flex flex-col flex-1 px-5 py-5 overflow-hidden">
+      {/* Steps — 70 % of sidebar height */}
+      <div className="flex flex-col px-5 py-5 overflow-hidden" style={{ flex: "0 0 70%" }}>
         {STEPS.map((s, i) => {
           const done = s.n < current;
           const active = s.n === current;
@@ -128,7 +128,7 @@ export function StepSidebar({ current, onSalir }: Props) {
       </div>
 
       {/* Exit */}
-      <div className="px-5 py-4 border-t border-ink-200 shrink-0">
+      <div className="px-5 py-4 border-t border-ink-200 shrink-0 mt-auto">
         <button
           onClick={onSalir}
           className="flex items-center gap-2 text-[12px] font-medium text-ink-500 hover:text-ink-700 transition-colors w-full group"

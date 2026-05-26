@@ -11,6 +11,27 @@ import { FieldLabel } from "../shared/FieldLabel";
 import { FormHeader } from "../shared/FormHeader";
 import { EmptyState } from "../shared/EmptyState";
 import { SavedCard } from "../shared/SavedCard";
+import { ChatCertificado } from "@/components/ai/ChatCertificado";
+
+const MESES = [
+  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre",
+];
+
+function parseFecha(str: string): { mes: string; anio: string } {
+  const m = str?.trim().match(/^([A-Za-záéíóúÁÉÍÓÚ]+)\s+(\d{4})$/);
+  if (m && MESES.includes(m[1])) return { mes: m[1], anio: m[2] };
+  return { mes: "", anio: str?.trim() ?? "" };
+}
+
+function fmtFecha(mes: string, anio: string): string {
+  return mes ? `${mes} ${anio}` : anio;
+}
+
+function fechaANum(mes: string, anio: string): number {
+  const m = MESES.indexOf(mes) + 1;
+  return parseInt(anio) * 100 + (m > 0 ? m : 0);
+}
 
 const NIVELES = [
   "Bachillerato", "Técnico", "Tecnólogo", "Universitario",
@@ -24,12 +45,14 @@ interface Campos {
   nombre: string;
   institucion: string;
   nivel: string;
+  mesInicio: string;
   inicio: string;
+  mesFin: string;
   fin: string;
   cert: string;
 }
 
-const BLANK: Campos = { nombre: "", institucion: "", nivel: "", inicio: "", fin: "", cert: "" };
+const BLANK: Campos = { nombre: "", institucion: "", nivel: "", mesInicio: "", inicio: "", mesFin: "", fin: "", cert: "" };
 
 interface Props {
   formaciones: Formacion[];
@@ -78,6 +101,7 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
   const [errores, setErrores] = useState<Record<string, string>>({});
   const [saliendo, setSaliendo] = useState<string | null>(null);
   const [showSuggest, setShowSuggest] = useState(false);
+  const [showChat, setShowChat] = useState(false);
 
   const set = (k: keyof Campos, v: string) => {
     setCampos((p) => ({ ...p, [k]: v }));
@@ -86,7 +110,10 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
 
   const editarItem = (item: Formacion) => {
     setEditandoId(item.id);
-    setCampos({ nombre: item.nombre, institucion: item.institucion, nivel: item.nivel, inicio: item.inicio, fin: item.fin, cert: item.cert });
+    const pI = parseFecha(item.inicio);
+    const pF = item.fin === "Actualidad" ? { mes: "", anio: "Actualidad" } : parseFecha(item.fin);
+    setCampos({ nombre: item.nombre, institucion: item.institucion, nivel: item.nivel,
+      mesInicio: pI.mes, inicio: pI.anio, mesFin: pF.mes, fin: pF.anio, cert: item.cert });
     setErrores({});
   };
 
@@ -103,8 +130,9 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
     if (!campos.nivel) e.nivel = "Selecciona el nivel";
     if (!campos.inicio) e.inicio = "Selecciona el año de inicio";
     if (!campos.fin) e.fin = "Selecciona el año de fin";
-    if (campos.fin && campos.fin !== "Actualidad" && campos.inicio && parseInt(campos.fin) < parseInt(campos.inicio))
-      e.fin = "El año de fin no puede ser anterior al de inicio";
+    if (campos.fin && campos.fin !== "Actualidad" && campos.inicio &&
+        fechaANum(campos.mesFin, campos.fin) < fechaANum(campos.mesInicio, campos.inicio))
+      e.fin = "La fecha de fin no puede ser anterior al inicio";
     if (campos.cert && !/^https?:\/\/.+/.test(campos.cert))
       e.cert = "Ingresa una URL válida (ej: https://...)";
 
@@ -115,8 +143,8 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
       nombre: campos.nombre.trim(),
       institucion: campos.institucion.trim(),
       nivel: campos.nivel,
-      inicio: campos.inicio,
-      fin: campos.fin,
+      inicio: fmtFecha(campos.mesInicio, campos.inicio),
+      fin: campos.fin === "Actualidad" ? "Actualidad" : fmtFecha(campos.mesFin, campos.fin),
       cert: campos.cert.trim(),
     };
 
@@ -180,6 +208,53 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
               editTitle={editandoItem?.nombre ?? ""}
               onCancel={cancelar}
             />
+
+            {!maximo && !showChat && (
+              <div className="mb-5 rounded-[10px] border border-neon/25 p-4" style={{ background: "rgba(0,229,160,0.04)" }}>
+                <div className="flex items-center gap-2 mb-1">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#00E5A0" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8M17.7 6.3l-2.8 2.8M9.1 14.9l-2.8 2.8"/>
+                  </svg>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-neon">Asistente IA</span>
+                </div>
+                <p className="text-[12px] text-ink-500 mb-3 leading-snug">Sube tu certificado o cuéntame sobre tus estudios — la IA completa el formulario y te pregunta lo que falte</p>
+                <button type="button" onClick={() => setShowChat(true)}
+                  className="h-9 px-4 rounded-[8px] bg-neon text-noir text-[12px] font-bold hover:brightness-90 transition-all inline-flex items-center gap-2">
+                  ✦ Hacer con IA
+                </button>
+              </div>
+            )}
+
+            {showChat && (
+              <div className="mb-4 rounded-[10px] overflow-hidden border border-neon/25" style={{ height: 400 }}>
+                <ChatCertificado
+                  onDatos={(datos) => {
+                    const raw = datos as Record<string, unknown>;
+                    const d: Record<string, string> =
+                      Array.isArray(raw.formacion) && raw.formacion.length > 0
+                        ? (raw.formacion[0] as Record<string, string>)
+                        : (raw as Record<string, string>);
+                    const partesP = (d.periodo ?? "").split(/\s*[-–]\s*/);
+                    const pI = parseFecha(d.fechaInicio ?? d.inicio ?? d.anioInicio ?? partesP[0] ?? "");
+                    const rawFin = d.fechaFin ?? d.fin ?? d.anioFin ?? partesP[1] ?? "";
+                    const pF = rawFin === "Actualidad" ? { mes: "", anio: "Actualidad" } : parseFecha(rawFin);
+                    const item: Formacion = {
+                      id: crypto.randomUUID(),
+                      nombre:      d.programa    ?? d.nombre     ?? "",
+                      institucion: d.institucion ?? "",
+                      nivel:       d.nivel       ?? "",
+                      inicio:      fmtFecha(pI.mes, pI.anio),
+                      fin:         rawFin === "Actualidad" ? "Actualidad" : fmtFecha(pF.mes, pF.anio),
+                      cert:        "",
+                    };
+                    const next = [...items, item];
+                    setItems(next);
+                    onChange(next);
+                  }}
+                  onCerrar={() => setShowChat(false)}
+                />
+              </div>
+            )}
 
             {maximo && (
               <div className="mb-4 p-3 rounded-[8px] bg-amber-50 border border-amber-200 text-[13px] text-amber-800">
@@ -251,33 +326,60 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <FieldLabel>Año inicio</FieldLabel>
-                  <div className="relative">
-                    <select
-                      className={`field appearance-none pr-9 ${errores.inicio ? "border-red-400" : ""}`}
-                      value={campos.inicio}
-                      onChange={(e) => set("inicio", e.target.value)}
-                    >
-                      <option value="">Año</option>
-                      {ANOS.map((a) => <option key={a}>{a}</option>)}
-                    </select>
-                    <Icons.Chevron className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
+                  <FieldLabel>Inicio</FieldLabel>
+                  <div className="flex gap-1.5">
+                    <div className="relative flex-1 min-w-0">
+                      <select
+                        className="field appearance-none pr-6 text-[12px]"
+                        value={campos.mesInicio}
+                        onChange={(e) => set("mesInicio", e.target.value)}
+                      >
+                        <option value="">Mes</option>
+                        {MESES.map((m) => <option key={m}>{m}</option>)}
+                      </select>
+                      <Icons.Chevron className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
+                    </div>
+                    <div className="relative flex-1 min-w-0">
+                      <select
+                        className={`field appearance-none pr-6 text-[12px] ${errores.inicio ? "border-red-400" : ""}`}
+                        value={campos.inicio}
+                        onChange={(e) => set("inicio", e.target.value)}
+                      >
+                        <option value="">Año</option>
+                        {ANOS.map((a) => <option key={a}>{a}</option>)}
+                      </select>
+                      <Icons.Chevron className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
+                    </div>
                   </div>
                   {errores.inicio && <p className="mt-1 text-xs text-red-600">{errores.inicio}</p>}
                 </div>
                 <div>
-                  <FieldLabel>Año fin</FieldLabel>
-                  <div className="relative">
-                    <select
-                      className={`field appearance-none pr-9 ${errores.fin ? "border-red-400" : ""}`}
-                      value={campos.fin}
-                      onChange={(e) => set("fin", e.target.value)}
-                    >
-                      <option value="">Año</option>
-                      <option>Actualidad</option>
-                      {ANOS.map((a) => <option key={a}>{a}</option>)}
-                    </select>
-                    <Icons.Chevron className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
+                  <FieldLabel>Fin</FieldLabel>
+                  <div className="flex gap-1.5">
+                    <div className="relative flex-1 min-w-0">
+                      <select
+                        className="field appearance-none pr-6 text-[12px] disabled:opacity-40"
+                        value={campos.mesFin}
+                        onChange={(e) => set("mesFin", e.target.value)}
+                        disabled={campos.fin === "Actualidad"}
+                      >
+                        <option value="">Mes</option>
+                        {MESES.map((m) => <option key={m}>{m}</option>)}
+                      </select>
+                      <Icons.Chevron className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
+                    </div>
+                    <div className="relative flex-1 min-w-0">
+                      <select
+                        className={`field appearance-none pr-6 text-[12px] ${errores.fin ? "border-red-400" : ""}`}
+                        value={campos.fin}
+                        onChange={(e) => set("fin", e.target.value)}
+                      >
+                        <option value="">Año</option>
+                        <option>Actualidad</option>
+                        {ANOS.map((a) => <option key={a}>{a}</option>)}
+                      </select>
+                      <Icons.Chevron className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
+                    </div>
                   </div>
                   {errores.fin && <p className="mt-1 text-xs text-red-600">{errores.fin}</p>}
                 </div>

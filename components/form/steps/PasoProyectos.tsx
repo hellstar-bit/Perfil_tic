@@ -11,6 +11,8 @@ import { FieldLabel } from "../shared/FieldLabel";
 import { FormHeader } from "../shared/FormHeader";
 import { EmptyState } from "../shared/EmptyState";
 import { SavedCard } from "../shared/SavedCard";
+import { BtnMejorarTexto } from "@/components/ai/BtnMejorarTexto";
+import { ChatEntrevista } from "@/components/ai/ChatEntrevista";
 
 const TIPOS = ["Académico", "Personal", "Freelance", "Voluntariado", "Laboral", "Otro"];
 const ANOS = Array.from({ length: 36 }, (_, i) => String(2026 - i));
@@ -86,6 +88,7 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
   const [campos, setCampos] = useState<Campos>(BLANK);
   const [errores, setErrores] = useState<Record<string, string>>({});
   const [saliendo, setSaliendo] = useState<string | null>(null);
+  const [showChat, setShowChat] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const set = <K extends keyof Campos>(k: K, v: Campos[K]) => {
@@ -207,6 +210,53 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
               onCancel={cancelar}
             />
 
+            {!maximo && !showChat && (
+              <div className="mb-5 rounded-[10px] border border-neon/25 p-4" style={{ background: "rgba(0,229,160,0.04)" }}>
+                <div className="flex items-center gap-2 mb-1">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#00E5A0" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8M17.7 6.3l-2.8 2.8M9.1 14.9l-2.8 2.8"/>
+                  </svg>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-neon">Asistente IA</span>
+                </div>
+                <p className="text-[12px] text-ink-500 mb-3 leading-snug">Cuéntanos tu proyecto y la IA completa el formulario por ti</p>
+                <button type="button" onClick={() => setShowChat(true)}
+                  className="h-9 px-4 rounded-[8px] bg-neon text-noir text-[12px] font-bold hover:brightness-90 transition-all inline-flex items-center gap-2">
+                  💬 Entrevistarme sobre este proyecto
+                </button>
+              </div>
+            )}
+
+            {showChat && (
+              <div className="mb-4 rounded-[10px] overflow-hidden border border-ink-200" style={{ height: 360 }}>
+                <ChatEntrevista
+                  seccion="proyectos"
+                  onDatos={(datos) => {
+                    const raw = datos as Record<string, unknown>;
+                    const d: Record<string, unknown> =
+                      Array.isArray(raw.proyectos) && raw.proyectos.length > 0
+                        ? (raw.proyectos[0] as Record<string, unknown>)
+                        : raw;
+                    const nombre = String(d.nombre ?? d.titulo ?? "");
+                    const item: Proyecto = {
+                      id:          crypto.randomUUID(),
+                      nombre,
+                      descripcion: String(d.descripcion ?? ""),
+                      tipo:        String(d.tipo ?? "Académico"),
+                      tecnologias: Array.isArray(d.tecnologias) ? (d.tecnologias as string[]) : [],
+                      url:         String(d.enlace ?? d.url ?? ""),
+                      imagen:      "",
+                      color:       generarColor(),
+                      iniciales:   generarIniciales(nombre),
+                    };
+                    const next = [...items, item];
+                    setItems(next);
+                    onChange(next);
+                  }}
+                  onCerrar={() => setShowChat(false)}
+                />
+              </div>
+            )}
+
             {maximo && (
               <div className="mb-4 p-3 rounded-[8px] bg-amber-50 border border-amber-200 text-[13px] text-amber-800">
                 Alcanzaste el máximo de 6 proyectos.
@@ -239,6 +289,11 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
                   />
                   <div className="absolute bottom-2 right-3 text-[10px] font-mono text-ink-400">{charCount}/200</div>
                 </div>
+                <BtnMejorarTexto
+                  texto={campos.descripcion}
+                  contexto="proyecto"
+                  onMejorado={(t) => set("descripcion", t)}
+                />
                 {errores.descripcion && <p className="mt-1 text-xs text-red-600">{errores.descripcion}</p>}
               </div>
 

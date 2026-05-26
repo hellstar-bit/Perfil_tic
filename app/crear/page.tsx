@@ -12,6 +12,8 @@ import type { Formacion, Proyecto, Experiencia } from "@/types/perfil";
 import { StepSidebar } from "@/components/form/shared/StepSidebar";
 import { CVTemplateSelector } from "@/components/CVTemplateSelector";
 import type { TemplateId } from "@/components/pdf/shared/pdfTypes";
+import { BtnGenerarFrase } from "@/components/ai/BtnGenerarFrase";
+import { PanelCoach } from "@/components/ai/PanelCoach";
 
 /* ─── Types ─── */
 type Habilidad = { nombre: string; nivel: number };
@@ -185,6 +187,14 @@ function Step1({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
                 onChange={f("frase")}
                 maxLength={280}
                 placeholder="Cuéntanos brevemente sobre ti y lo que buscas..."
+              />
+              <BtnGenerarFrase
+                nombre={state.nombre}
+                cargo={state.cargo}
+                habilidades={state.habilidades.map((h) => h.nombre)}
+                experiencia={state.experiencias.map((e) => e.cargo)}
+                formacion={state.formaciones.map((f) => f.nombre)}
+                onSelect={(frase) => dispatch({ type: "SET", payload: { frase } })}
               />
             </div>
             <div>
@@ -414,6 +424,18 @@ function Step6({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
 
   return (
     <div className="space-y-6">
+      {/* Coach IA */}
+      <PanelCoach
+        nombre={name}
+        cargo={state.cargo}
+        frase={state.frase}
+        foto={state.foto}
+        habilidades={state.habilidades}
+        formaciones={state.formaciones}
+        proyectos={state.proyectos}
+        experiencias={state.experiencias}
+      />
+
       {/* Preview card */}
       <div className="card overflow-hidden">
         <div className="h-2" style={{ backgroundColor: tema }} />

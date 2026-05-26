@@ -18,7 +18,11 @@
       "Bash(npx prisma *)",
       "Bash(node -e \"require\\('pdfjs-dist'\\)\")",
       "Bash(node -e \"console.log\\(require\\('pdfjs-dist/package.json'\\).version\\)\")",
-      "PowerShell(Copy-Item \"c:\\\\xampp\\\\htdocs\\\\Perfil_tic\\\\node_modules\\\\pdfjs-dist\\\\build\\\\pdf.worker.min.js\" \"c:\\\\xampp\\\\htdocs\\\\Perfil_tic\\\\public\\\\pdf.worker.min.js\")"
+      "PowerShell(Copy-Item \"c:\\\\xampp\\\\htdocs\\\\Perfil_tic\\\\node_modules\\\\pdfjs-dist\\\\build\\\\pdf.worker.min.js\" \"c:\\\\xampp\\\\htdocs\\\\Perfil_tic\\\\public\\\\pdf.worker.min.js\")",
+      "Bash(npm install *)",
+      "Bash(node -e \"const m = require\\('./node_modules/@mistralai/mistralai/package.json'\\); console.log\\(m.version\\)\")",
+      "Bash(node -e \"require\\('dotenv'\\).config\\({path:'.env'}\\); console.log\\('KEY:', process.env.MISTRAL_API_KEY ? 'present \\(' + process.env.MISTRAL_API_KEY.length + ' chars\\)' : 'MISSING'\\)\")",
+      "Bash(node -e ' *)"
     ]
   }
 }

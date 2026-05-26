@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { ShareButtonMobile, ShareButtonDesktop, CopyButtonInline, CopyButtonDesktop } from "./ShareButtons";
 import { CVPreviewPanel } from "./CVPreviewPanel";
+import { logout } from "@/lib/actions/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -31,12 +32,12 @@ const Arrow = () => (
 );
 
 const Logo = () => (
-  <div className="flex items-center gap-2">
+  <a href="/" className="flex items-center gap-2">
     <div className="h-7 aspect-square rounded-[7px] bg-neon grid place-items-center text-noir">
       <svg viewBox="0 0 24 24" width="60%" height="60%" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 19V5h7a4 4 0 0 1 0 8H5"/></svg>
     </div>
     <span className="font-semibold text-ink-900 tracking-tight text-[15px]">Perfil<span className="text-neon">TIC</span></span>
-  </div>
+  </a>
 );
 
 function initials(name: string) {
@@ -80,9 +81,16 @@ function PerfilMobile({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwne
         <Logo />
         <div className="flex items-center gap-2">
           {isOwner && (
-            <a href="/editar" className="text-xs font-medium text-ink-600 inline-flex items-center gap-1 border border-ink-200 rounded-md px-2.5 py-1.5 hover:bg-ink-100 transition-colors">
-              <Edit /> Editar
-            </a>
+            <>
+              <a href="/editar" className="text-xs font-medium text-ink-600 inline-flex items-center gap-1 border border-ink-200 rounded-md px-2.5 py-1.5 hover:bg-ink-100 transition-colors">
+                <Edit /> Editar
+              </a>
+              <form action={logout}>
+                <button type="submit" className="text-xs font-medium text-ink-500 border border-ink-200 rounded-md px-2.5 py-1.5 hover:bg-ink-100 transition-colors">
+                  Salir
+                </button>
+              </form>
+            </>
           )}
           <ShareButtonMobile slug={perfil.slug} />
         </div>
@@ -218,9 +226,16 @@ function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwn
         <Logo />
         <div className="flex items-center gap-3">
           {isOwner && (
-            <a href="/editar" className="btn-outline h-9 px-4 gap-2 inline-flex items-center text-sm">
-              <Edit /> Editar perfil
-            </a>
+            <>
+              <a href="/editar" className="btn-outline h-9 px-4 gap-2 inline-flex items-center text-sm">
+                <Edit /> Editar perfil
+              </a>
+              <form action={logout}>
+                <button type="submit" className="btn-ghost h-9 px-3 text-sm text-ink-500 hover:text-ink-700">
+                  Cerrar sesión
+                </button>
+              </form>
+            </>
           )}
           <ShareButtonDesktop slug={perfil.slug} />
         </div>
