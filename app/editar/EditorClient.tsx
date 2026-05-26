@@ -10,13 +10,15 @@ import { PasoExperiencia } from "@/components/form/steps/PasoExperiencia";
 import { PALETA } from "@/lib/paleta";
 import type { Formacion, Proyecto, Experiencia } from "@/types/perfil";
 import { StepSidebar } from "@/components/form/shared/StepSidebar";
+import { CVTemplateSelector } from "@/components/CVTemplateSelector";
+import type { TemplateId } from "@/components/pdf/shared/pdfTypes";
 
 type Habilidad = { nombre: string; nivel: number };
 
 export type State = {
   nombre: string; apellido: string; cargo: string; departamento: string;
   municipio: string; email: string; telefono: string; foto: string;
-  frase: string; modalidad: string; colorTema: string;
+  frase: string; modalidad: string; colorTema: string; cvTemplate: string;
   habilidades: Habilidad[]; formaciones: Formacion[];
   proyectos: Proyecto[]; experiencias: Experiencia[];
 };
@@ -128,63 +130,85 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
   });
 
   return (
-    <div className="space-y-5">
-      <div className="relative">
-        <input className="field pr-20" value={search} onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && addCustom()}
-          placeholder="Buscar o agregar (ej: Python, Canva...)" />
-        <button onClick={addCustom} className="absolute right-1.5 top-1.5 h-8 px-3 rounded-[6px] bg-neon text-noir text-xs font-semibold">Agregar</button>
-      </div>
-      <div className="flex gap-1.5 flex-wrap">
-        {["Todas", ...CATEGORIAS].map((cat) => (
-          <button key={cat} onClick={() => setCategoria(cat)}
-            className={`h-7 px-3 rounded-full text-[11px] font-medium transition-colors ${categoria === cat ? "bg-neon text-noir" : "bg-ink-100 text-ink-600 hover:bg-ink-200"}`}>
-            {cat}
-          </button>
-        ))}
-      </div>
-      <div>
-        <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-2">
-          {search ? `Resultados para "${search}"` : categoria === "Todas" ? "Habilidades sugeridas" : categoria}
+    <div className="md:grid md:grid-cols-[1fr_300px] md:gap-8 md:items-start">
+
+      {/* Left — search / categories / skills / tip */}
+      <div className="space-y-5">
+        <div className="relative">
+          <input className="field pr-20" value={search} onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addCustom()}
+            placeholder="Buscar o agregar (ej: Python, Canva...)" />
+          <button onClick={addCustom} className="absolute right-1.5 top-1.5 h-8 px-3 rounded-[6px] bg-neon text-noir text-xs font-semibold">Agregar</button>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {visibles.map((h) => (
-            <button key={h.nombre} onClick={() => toggle(h.nombre)}
-              className={`h-9 px-3.5 rounded-full text-sm font-medium inline-flex items-center gap-1.5 border transition-colors ${selected.has(h.nombre) ? "bg-neon text-noir border-neon" : "bg-ink-100 text-ink-900 border-ink-200 hover:border-ink-300"}`}>
-              {selected.has(h.nombre) && <Check />} {h.nombre}
+
+        <div className="flex gap-1.5 flex-wrap">
+          {["Todas", ...CATEGORIAS].map((cat) => (
+            <button key={cat} onClick={() => setCategoria(cat)}
+              className={`h-7 px-3 rounded-full text-[11px] font-medium transition-colors ${categoria === cat ? "bg-neon text-noir" : "bg-ink-100 text-ink-600 hover:bg-ink-200"}`}>
+              {cat}
             </button>
           ))}
-          {visibles.length === 0 && <p className="text-sm text-ink-400">Sin resultados. Usa &quot;Agregar&quot; para añadirla.</p>}
         </div>
-      </div>
-      {state.habilidades.length > 0 && (
+
         <div>
-          <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-3">Tu nivel en lo seleccionado</div>
-          <div className="space-y-3">
-            {state.habilidades.map((h) => (
-              <div key={h.nombre} className="card p-3.5">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-medium text-sm">{h.nombre}</div>
-                  <div className="flex items-center gap-2">
-                    <div className="text-[11px] text-ink-500">{LEVELS[h.nivel - 1]}</div>
-                    <button onClick={() => toggle(h.nombre)} className="text-ink-400 hover:text-red-500"><Trash /></button>
-                  </div>
-                </div>
-                <div className="flex gap-1.5">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <button key={i} onClick={() => setLevel(h.nombre, i)}
-                      className={`flex-1 h-2 rounded-full transition-colors ${i <= h.nivel ? "bg-brand-500" : "bg-ink-100"}`} />
-                  ))}
-                </div>
-              </div>
+          <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-2">
+            {search ? `Resultados para "${search}"` : categoria === "Todas" ? "Habilidades sugeridas" : categoria}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {visibles.map((h) => (
+              <button key={h.nombre} onClick={() => toggle(h.nombre)}
+                className={`h-9 px-3.5 rounded-full text-sm font-medium inline-flex items-center gap-1.5 border transition-colors ${selected.has(h.nombre) ? "bg-neon text-noir border-neon" : "bg-ink-100 text-ink-900 border-ink-200 hover:border-ink-300"}`}>
+                {selected.has(h.nombre) && <Check />} {h.nombre}
+              </button>
             ))}
+            {visibles.length === 0 && <p className="text-sm text-ink-400">Sin resultados. Usa &quot;Agregar&quot; para añadirla.</p>}
           </div>
         </div>
-      )}
-      <div className="p-3.5 rounded-[10px] bg-brand-50 border border-brand-100 flex gap-3">
-        <span className="text-brand-600 shrink-0 mt-0.5"><Sparkle /></span>
-        <div className="text-[13px] text-brand-800 leading-snug">
-          <b>Tip:</b> ser honesto con tu nivel funciona mejor. Los reclutadores valoran más quien dice <i>&quot;básico&quot;</i> con seguridad que quien exagera.
+
+        <div className="p-3.5 rounded-[10px] bg-brand-50 border border-brand-100 flex gap-3">
+          <span className="text-brand-600 shrink-0 mt-0.5"><Sparkle /></span>
+          <div className="text-[13px] text-brand-800 leading-snug">
+            <b>Tip:</b> ser honesto con tu nivel funciona mejor. Los reclutadores valoran más quien dice <i>&quot;básico&quot;</i> con seguridad que quien exagera.
+          </div>
+        </div>
+      </div>
+
+      {/* Right — level selectors (sticky on desktop, below on mobile) */}
+      <div className={`mt-5 md:mt-0 md:sticky md:top-6 ${state.habilidades.length === 0 ? "hidden md:block" : ""}`}>
+        <div className="card p-4">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-neon mb-3">
+            Tu nivel en lo seleccionado
+          </div>
+          {state.habilidades.length === 0 ? (
+            <div className="py-10 flex flex-col items-center gap-2 text-center">
+              <div className="h-10 w-10 rounded-full bg-ink-100 grid place-items-center text-ink-400 mb-1">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </div>
+              <p className="text-[13px] text-ink-500 leading-snug">Selecciona habilidades<br />para ajustar tu nivel</p>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {state.habilidades.map((h) => (
+                <div key={h.nombre} className="p-3 rounded-[8px] bg-ink-50 border border-ink-200">
+                  <div className="flex items-center justify-between mb-2.5">
+                    <span className="font-medium text-[13px] text-ink-900 truncate flex-1 min-w-0 pr-1">{h.nombre}</span>
+                    <button onClick={() => toggle(h.nombre)} className="text-ink-400 hover:text-coral shrink-0"><Trash /></button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1 flex-1">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <button key={i} onClick={() => setLevel(h.nombre, i)}
+                          className={`flex-1 h-1.5 rounded-full transition-colors ${i <= h.nivel ? "bg-neon" : "bg-ink-200 hover:bg-ink-300"}`} />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-ink-500 shrink-0 w-16 text-right">{LEVELS[h.nivel - 1]}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -220,7 +244,7 @@ function Step6({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
       </div>
 
       <div className="card p-4">
-        <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-3">Color de tu CV</div>
+        <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-3">Color de tu perfil</div>
         <div className="grid grid-cols-4 gap-2">
           {PALETA.map((p) => (
             <button key={p.color} onClick={() => dispatch({ type: "SET", payload: { colorTema: p.color } })}
@@ -236,6 +260,13 @@ function Step6({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="card p-4">
+        <CVTemplateSelector
+          selected={(state.cvTemplate as TemplateId) || "clasica"}
+          onSelect={(id) => dispatch({ type: "SET", payload: { cvTemplate: id } })}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-3 text-sm">
@@ -326,7 +357,7 @@ export function EditorClient({ initialState, slug }: { initialState: State; slug
         </div>
 
         <main className="flex-1 overflow-y-auto">
-          <div className="py-6 px-5 max-w-lg mx-auto w-full">
+          <div className={`py-6 px-5 mx-auto w-full ${step === 2 ? "max-w-4xl md:px-10 md:py-8" : "max-w-lg"}`}>
             <div className="text-xs font-medium uppercase tracking-wider text-neon">Paso {step}</div>
             <h1 className="mt-1 text-[24px] leading-tight font-semibold">
               {step === 1 && "Información personal"}

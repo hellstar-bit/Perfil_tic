@@ -3,6 +3,7 @@ import type { Habilidad, Proyecto, Formacion, Experiencia } from "@/app/generate
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { ShareButtonMobile, ShareButtonDesktop, CopyButtonInline, CopyButtonDesktop } from "./ShareButtons";
+import { CVPreviewPanel } from "./CVPreviewPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -106,9 +107,12 @@ function PerfilMobile({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwne
           <span className="inline-flex items-center gap-1"><Mail /> {perfil.email}</span>
           {perfil.telefono && <span className="inline-flex items-center gap-1"><Phone /> {perfil.telefono}</span>}
         </div>
-        <a href={`/api/cv/${perfil.id}`} download
-          className="mt-5 w-full h-11 rounded-[8px] bg-neon text-noir font-semibold text-sm flex items-center justify-center gap-2 hover:brightness-90 transition-all">
-          <Download /> Descargar CV (PDF)
+        <a
+          href={`/api/cv/${perfil.id}?template=${perfil.cvTemplate ?? "clasica"}`}
+          download
+          className="mt-5 w-full h-11 rounded-[8px] bg-neon text-noir font-semibold text-sm flex items-center justify-center gap-2 hover:brightness-90 transition-all"
+        >
+          <Download /> Descargar CV
         </a>
       </section>
 
@@ -219,10 +223,6 @@ function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwn
             </a>
           )}
           <ShareButtonDesktop slug={perfil.slug} />
-          <a href={`/api/cv/${perfil.id}`} download
-            className="h-9 px-4 rounded-[8px] bg-neon text-noir font-semibold text-sm inline-flex items-center gap-2 hover:brightness-90 transition-all">
-            <Download /> Descargar CV
-          </a>
         </div>
       </header>
 
@@ -253,12 +253,13 @@ function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwn
       </section>
 
       {/* Body */}
-      <div className="max-w-[1080px] mx-auto grid grid-cols-12 gap-5 px-10 py-10">
-        {/* Sidebar */}
-        <aside className="col-span-4 space-y-5">
+      <div className="max-w-[1280px] mx-auto grid grid-cols-[220px_1fr_260px] gap-5 px-10 py-10 items-start">
+
+        {/* Left sidebar */}
+        <aside className="space-y-5">
           {perfil.habilidades.length > 0 && (
-            <div className="card p-6">
-              <h2 className="section-label mb-5">Constelación de habilidades</h2>
+            <div className="card p-5">
+              <h2 className="section-label mb-4">Habilidades</h2>
               <div className="flex flex-wrap gap-2">
                 {perfil.habilidades
                   .slice()
@@ -271,9 +272,9 @@ function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwn
           )}
 
           {/* Link público */}
-          <div className="card p-5">
-            <div className="section-label mb-3">Mi link público</div>
-            <div className="flex items-center gap-2 rounded-[8px] p-3 font-mono text-[11px] text-ink-700 border border-ink-200" style={{ background: "#1E1E1E" }}>
+          <div className="card p-4">
+            <div className="section-label mb-3">Mi link</div>
+            <div className="flex items-center gap-2 rounded-[8px] p-2.5 font-mono text-[11px] text-ink-700 border border-ink-200" style={{ background: "#1E1E1E" }}>
               <LinkSvg />
               <span className="truncate flex-1 text-ink-900">perfiltic.co/{perfil.slug}</span>
               <CopyButtonDesktop slug={perfil.slug} />
@@ -282,11 +283,11 @@ function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwn
         </aside>
 
         {/* Main */}
-        <main className="col-span-8 space-y-5">
+        <main className="space-y-5 min-w-0">
           {perfil.proyectos.length > 0 && (
             <div className="card p-6">
               <h2 className="section-label mb-5">Proyectos</h2>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {perfil.proyectos.map((p: Proyecto) => (
                   <div key={p.id} className="rounded-[10px] border border-ink-200 p-3.5 hover:border-neon/30 transition-colors"
                     style={{ background: "#1E1E1E" }}>
@@ -339,6 +340,9 @@ function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwn
             </div>
           )}
         </main>
+
+        {/* Right — CV preview */}
+        <CVPreviewPanel perfilId={perfil.id} initialTemplate={perfil.cvTemplate ?? "clasica"} />
       </div>
 
       <footer className="px-10 py-6 border-t border-ink-200 text-[12px] text-ink-500 flex items-center justify-between" style={{ background: "#161616" }}>

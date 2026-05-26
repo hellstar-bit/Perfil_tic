@@ -53,6 +53,7 @@ const perfilSchema = z.object({
   frase: z.string().optional(),
   modalidad: z.string().optional(),
   colorTema: z.string().optional().default("#0f6e56"),
+  cvTemplate: z.string().optional().default("clasica"),
   habilidades: z.array(habilidadSchema).default([]),
   formaciones: z.array(formacionSchema).default([]),
   proyectos: z.array(proyectoSchema).default([]),
@@ -97,7 +98,7 @@ export async function POST(request: NextRequest) {
 
     const {
       nombre, apellido, cargo, departamento, municipio, email,
-      telefono, foto, frase, modalidad, colorTema,
+      telefono, foto, frase, modalidad, colorTema, cvTemplate,
       habilidades, formaciones, proyectos, experiencias,
     } = parsed.data;
 
@@ -119,7 +120,7 @@ export async function POST(request: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const perfil = await (prisma.$transaction as any)(async (tx: typeof prisma) => {
       const p = await tx.perfil.create({
-        data: { slug, nombre: fullName, cargo, departamento, municipio, email, telefono, foto, frase, modalidad, colorTema, userId },
+        data: { slug, nombre: fullName, cargo, departamento, municipio, email, telefono, foto, frase, modalidad, colorTema, cvTemplate, userId },
       });
 
       if (habilidades.length > 0) {
@@ -201,7 +202,7 @@ export async function PUT(request: NextRequest) {
 
     const {
       nombre, apellido, cargo, departamento, municipio, email,
-      telefono, foto, frase, modalidad, colorTema,
+      telefono, foto, frase, modalidad, colorTema, cvTemplate,
       habilidades, formaciones, proyectos, experiencias,
     } = parsed.data;
 
@@ -213,7 +214,7 @@ export async function PUT(request: NextRequest) {
       // Update core fields (slug stays fixed to preserve the public link)
       await tx.perfil.update({
         where: { id: pid },
-        data: { nombre: fullName, cargo, departamento, municipio, email, telefono, foto, frase, modalidad, colorTema },
+        data: { nombre: fullName, cargo, departamento, municipio, email, telefono, foto, frase, modalidad, colorTema, cvTemplate },
       });
 
       // Replace all nested records

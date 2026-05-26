@@ -30,6 +30,7 @@ export default async function EditarPage() {
     frase: perfil.frase ?? "",
     modalidad: perfil.modalidad ?? "",
     colorTema: perfil.colorTema ?? "#0f6e56",
+    cvTemplate: perfil.cvTemplate ?? "clasica",
     habilidades: perfil.habilidades.map((h) => ({ nombre: h.nombre, nivel: h.nivel })),
     formaciones: perfil.formacion.map((f) => ({
       id: randomUUID(),

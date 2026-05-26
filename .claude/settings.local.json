@@ -13,7 +13,12 @@
       "Read(//c/xampp/**)",
       "Read(//c/Users/**)",
       "Bash(powershell -Command ' *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(Select-String \"tailwind|next\")",
+      "Bash(npx prisma *)",
+      "Bash(node -e \"require\\('pdfjs-dist'\\)\")",
+      "Bash(node -e \"console.log\\(require\\('pdfjs-dist/package.json'\\).version\\)\")",
+      "PowerShell(Copy-Item \"c:\\\\xampp\\\\htdocs\\\\Perfil_tic\\\\node_modules\\\\pdfjs-dist\\\\build\\\\pdf.worker.min.js\" \"c:\\\\xampp\\\\htdocs\\\\Perfil_tic\\\\public\\\\pdf.worker.min.js\")"
     ]
   }
 }

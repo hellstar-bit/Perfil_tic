@@ -58,23 +58,8 @@ function ProyectoCard({
 }) {
   return (
     <SavedCard active={active} deleting={deleting} onEdit={onEdit} onDelete={onDelete}>
-      <div
-        className="relative h-32 w-full"
-        style={{ background: `repeating-linear-gradient(135deg, ${item.color} 0 8px, transparent 8px 16px), ${item.color}` }}
-      >
-        {item.imagen ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.imagen} alt={item.nombre} className="absolute inset-0 w-full h-full object-cover" />
-        ) : (
-          <div className="absolute inset-0 grid place-items-center">
-            <div className="font-mono font-semibold text-2xl text-ink-700/40">{item.iniciales}</div>
-          </div>
-        )}
-        <div className="absolute top-3 left-3 inline-flex items-center px-2 py-0.5 rounded-md bg-ink-100/90 backdrop-blur-sm text-[10px] font-medium text-ink-700 border border-ink-200">
-          {item.tipo}
-        </div>
-      </div>
-      <div className="p-4">
+      <div className="p-4 pr-24">
+        <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-ink-200 text-[10px] font-medium text-ink-600 mb-2">{item.tipo}</div>
         <div className="font-semibold text-[14px] leading-tight text-ink-900">{item.nombre}</div>
         <div className="text-[12px] text-ink-600 mt-1 leading-snug line-clamp-2">{item.descripcion}</div>
         <div className="mt-2.5 flex items-center gap-1.5 flex-wrap">

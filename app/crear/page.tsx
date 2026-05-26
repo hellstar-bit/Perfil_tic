@@ -10,6 +10,8 @@ import { PasoExperiencia } from "@/components/form/steps/PasoExperiencia";
 import { PALETA } from "@/lib/paleta";
 import type { Formacion, Proyecto, Experiencia } from "@/types/perfil";
 import { StepSidebar } from "@/components/form/shared/StepSidebar";
+import { CVTemplateSelector } from "@/components/CVTemplateSelector";
+import type { TemplateId } from "@/components/pdf/shared/pdfTypes";
 
 /* ─── Types ─── */
 type Habilidad = { nombre: string; nivel: number };
@@ -26,6 +28,7 @@ type State = {
   frase: string;
   modalidad: string;
   colorTema: string;
+  cvTemplate: string;
   habilidades: Habilidad[];
   formaciones: Formacion[];
   proyectos: Proyecto[];
@@ -38,7 +41,7 @@ type Action =
 
 const INITIAL: State = {
   nombre: "", apellido: "", cargo: "", departamento: "", municipio: "", email: "",
-  telefono: "", foto: "", frase: "", modalidad: "", colorTema: "#0f6e56",
+  telefono: "", foto: "", frase: "", modalidad: "", colorTema: "#0f6e56", cvTemplate: "clasica",
   habilidades: [], formaciones: [], proyectos: [], experiencias: [],
 };
 
@@ -106,79 +109,179 @@ function Step1({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
   const f = (k: keyof State) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     dispatch({ type: "SET", payload: { [k]: e.target.value } });
 
+  const fullName = [state.nombre, state.apellido].filter(Boolean).join(" ");
+  const initials = fullName.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("") || "?";
+
+  const CHECKS = [
+    { label: "Nombre",    ok: !!state.nombre },
+    { label: "Cargo",     ok: !!state.cargo },
+    { label: "Ubicación", ok: !!(state.departamento && state.municipio) },
+    { label: "Correo",    ok: !!state.email },
+    { label: "Teléfono",  ok: !!state.telefono },
+    { label: "Frase",     ok: !!state.frase },
+    { label: "Modalidad", ok: !!state.modalidad },
+  ];
+  const done = CHECKS.filter((c) => c.ok).length;
+
   return (
-    <div className="space-y-7">
-      {/* Datos básicos */}
-      <div>
-        <SectionLabel>Datos básicos</SectionLabel>
-        <div className="space-y-3">
+    <div className="md:grid md:grid-cols-[1fr_272px] md:gap-10 md:items-start">
+
+      {/* ── Left: form ── */}
+      <div className="space-y-7">
+        <div>
+          <SectionLabel>Datos básicos</SectionLabel>
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Nombre *</label>
+                <input className="field" value={state.nombre} onChange={f("nombre")} placeholder="Laura" />
+              </div>
+              <div>
+                <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Apellido</label>
+                <input className="field" value={state.apellido} onChange={f("apellido")} placeholder="Mendoza" />
+              </div>
+            </div>
+            <div>
+              <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Cargo / Rol *</label>
+              <input className="field" value={state.cargo} onChange={f("cargo")} placeholder="Desarrolladora Front-end Junior" />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <SectionLabel>Ubicación</SectionLabel>
+          <LocationSelect
+            departamento={state.departamento}
+            municipio={state.municipio}
+            onChange={(field, value) => dispatch({ type: "SET", payload: { [field]: value } })}
+          />
+        </div>
+
+        <div>
+          <SectionLabel>Contacto</SectionLabel>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Nombre *</label>
-              <input className="field" value={state.nombre} onChange={f("nombre")} placeholder="Laura" />
+              <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Correo electrónico *</label>
+              <input className="field" type="email" value={state.email} onChange={f("email")} placeholder="laura@correo.co" />
             </div>
             <div>
-              <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Apellido</label>
-              <input className="field" value={state.apellido} onChange={f("apellido")} placeholder="Mendoza" />
+              <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Teléfono</label>
+              <input className="field" value={state.telefono} onChange={f("telefono")} placeholder="+57 300 000 0000" />
             </div>
           </div>
-          <div>
-            <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Cargo / Rol *</label>
-            <input className="field" value={state.cargo} onChange={f("cargo")} placeholder="Desarrolladora Front-end Junior" />
+        </div>
+
+        <div>
+          <SectionLabel>Presentación</SectionLabel>
+          <div className="space-y-3">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-[11px] font-medium text-ink-600 tracking-wide">Frase de presentación</label>
+                <span className="text-[10px] font-mono text-ink-500">{state.frase.length}/280</span>
+              </div>
+              <textarea
+                className="field h-24 py-2.5 resize-none"
+                value={state.frase}
+                onChange={f("frase")}
+                maxLength={280}
+                placeholder="Cuéntanos brevemente sobre ti y lo que buscas..."
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Modalidad preferida</label>
+              <select className="field" value={state.modalidad} onChange={f("modalidad")}>
+                <option value="">Selecciona...</option>
+                <option value="Remoto">Remoto</option>
+                <option value="Híbrido">Híbrido</option>
+                <option value="Presencial">Presencial</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Ubicación */}
-      <div>
-        <SectionLabel>Ubicación</SectionLabel>
-        <LocationSelect
-          departamento={state.departamento}
-          municipio={state.municipio}
-          onChange={(field, value) => dispatch({ type: "SET", payload: { [field]: value } })}
-        />
-      </div>
+      {/* ── Right: live preview ── */}
+      <div className="hidden md:flex flex-col gap-4 sticky top-6">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-ink-500">
+          Vista previa
+        </p>
 
-      {/* Contacto */}
-      <div>
-        <SectionLabel>Contacto</SectionLabel>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Correo electrónico *</label>
-            <input className="field" type="email" value={state.email} onChange={f("email")} placeholder="laura@correo.co" />
-          </div>
-          <div>
-            <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Teléfono</label>
-            <input className="field" value={state.telefono} onChange={f("telefono")} placeholder="+57 300 000 0000" />
+        {/* Profile card preview */}
+        <div className="card overflow-hidden">
+          <div className="h-1.5" style={{ background: "linear-gradient(90deg,#00C78A,#00E5A0)" }} />
+          <div className="p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="h-11 w-11 rounded-full grid place-items-center font-bold text-white text-sm shrink-0 transition-colors duration-300"
+                style={{ background: state.nombre ? "#1a3a6b" : "#2E2E2E" }}
+              >
+                {initials}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-bold text-[14px] text-ink-900 leading-tight truncate">
+                  {fullName || <span className="text-ink-500 font-normal italic text-[12px]">Tu nombre</span>}
+                </div>
+                <div className="text-[11px] text-ink-500 mt-0.5 truncate">
+                  {state.cargo || <span className="italic">Cargo / Rol</span>}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5 mb-3 min-h-[22px]">
+              {state.municipio && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-ink-100 border border-ink-200 text-ink-600">
+                  {[state.municipio, state.departamento].filter(Boolean).join(", ")}
+                </span>
+              )}
+              {state.modalidad && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand-50 border border-neon/20 text-neon">
+                  {state.modalidad}
+                </span>
+              )}
+              {!state.municipio && !state.modalidad && (
+                <span className="text-[10px] text-ink-600 italic">Ubicación y modalidad…</span>
+              )}
+            </div>
+
+            <div className="border-t border-ink-200 pt-3">
+              {state.frase ? (
+                <p className="text-[11px] text-ink-600 leading-relaxed line-clamp-3">{state.frase}</p>
+              ) : (
+                <p className="text-[11px] text-ink-600 italic">Tu frase de presentación…</p>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Presentación */}
-      <div>
-        <SectionLabel>Presentación</SectionLabel>
-        <div className="space-y-3">
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-[11px] font-medium text-ink-600 tracking-wide">Frase de presentación</label>
-              <span className="text-[10px] font-mono text-ink-500">{state.frase.length}/280</span>
-            </div>
-            <textarea
-              className="field h-24 py-2.5 resize-none"
-              value={state.frase}
-              onChange={f("frase")}
-              maxLength={280}
-              placeholder="Cuéntanos brevemente sobre ti y lo que buscas..."
+        {/* Completitud */}
+        <div className="card p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-semibold text-ink-700">Completitud</span>
+            <span className="text-[11px] font-mono font-bold text-neon">{done}/{CHECKS.length}</span>
+          </div>
+          <div className="h-1 w-full rounded-full bg-ink-200 overflow-hidden mb-3">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${(done / CHECKS.length) * 100}%`,
+                background: "linear-gradient(90deg,#00C78A,#00E5A0)",
+              }}
             />
           </div>
-          <div>
-            <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Modalidad preferida</label>
-            <select className="field" value={state.modalidad} onChange={f("modalidad")}>
-              <option value="">Selecciona...</option>
-              <option value="Remoto">Remoto</option>
-              <option value="Híbrido">Híbrido</option>
-              <option value="Presencial">Presencial</option>
-            </select>
+          <div className="space-y-1.5">
+            {CHECKS.map(({ label, ok }) => (
+              <div key={label} className="flex items-center gap-2">
+                <div
+                  className={`h-4 w-4 rounded-full grid place-items-center shrink-0 transition-all duration-300
+                    ${ok ? "bg-neon" : "bg-ink-200"}`}
+                >
+                  {ok && <Check />}
+                </div>
+                <span className={`text-[11px] transition-colors ${ok ? "text-ink-700" : "text-ink-500"}`}>
+                  {label}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -218,67 +321,85 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
   });
 
   return (
-    <div className="space-y-5">
-      <div className="relative">
-        <input className="field pr-20" value={search} onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && addCustom()}
-          placeholder="Buscar o agregar (ej: Python, Canva...)" />
-        <button onClick={addCustom} className="absolute right-1.5 top-1.5 h-8 px-3 rounded-[6px] bg-neon text-noir text-xs font-semibold">Agregar</button>
-      </div>
+    <div className="md:grid md:grid-cols-[1fr_300px] md:gap-8 md:items-start">
 
-      <div className="flex gap-1.5 flex-wrap">
-        {["Todas", ...CATEGORIAS].map((cat) => (
-          <button key={cat} onClick={() => setCategoria(cat)}
-            className={`h-7 px-3 rounded-full text-[11px] font-medium transition-colors ${categoria === cat ? "bg-neon text-noir" : "bg-ink-100 text-ink-600 hover:bg-ink-200"}`}>
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      <div>
-        <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-2">
-          {search ? `Resultados para "${search}"` : categoria === "Todas" ? "Habilidades sugeridas" : categoria}
+      {/* Left — search / categories / skills / tip */}
+      <div className="space-y-5">
+        <div className="relative">
+          <input className="field pr-20" value={search} onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addCustom()}
+            placeholder="Buscar o agregar (ej: Python, Canva...)" />
+          <button onClick={addCustom} className="absolute right-1.5 top-1.5 h-8 px-3 rounded-[6px] bg-neon text-noir text-xs font-semibold">Agregar</button>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {visibles.map((h) => (
-            <button key={h.nombre} onClick={() => toggle(h.nombre)}
-              className={`h-9 px-3.5 rounded-full text-sm font-medium inline-flex items-center gap-1.5 border transition-colors ${selected.has(h.nombre) ? "bg-neon text-noir border-neon" : "bg-ink-100 text-ink-900 border-ink-200 hover:border-ink-300"}`}>
-              {selected.has(h.nombre) && <Check />} {h.nombre}
+
+        <div className="flex gap-1.5 flex-wrap">
+          {["Todas", ...CATEGORIAS].map((cat) => (
+            <button key={cat} onClick={() => setCategoria(cat)}
+              className={`h-7 px-3 rounded-full text-[11px] font-medium transition-colors ${categoria === cat ? "bg-neon text-noir" : "bg-ink-100 text-ink-600 hover:bg-ink-200"}`}>
+              {cat}
             </button>
           ))}
-          {visibles.length === 0 && <p className="text-sm text-ink-400">Sin resultados. Usa &quot;Agregar&quot; para añadirla.</p>}
+        </div>
+
+        <div>
+          <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-2">
+            {search ? `Resultados para "${search}"` : categoria === "Todas" ? "Habilidades sugeridas" : categoria}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {visibles.map((h) => (
+              <button key={h.nombre} onClick={() => toggle(h.nombre)}
+                className={`h-9 px-3.5 rounded-full text-sm font-medium inline-flex items-center gap-1.5 border transition-colors ${selected.has(h.nombre) ? "bg-neon text-noir border-neon" : "bg-ink-100 text-ink-900 border-ink-200 hover:border-ink-300"}`}>
+                {selected.has(h.nombre) && <Check />} {h.nombre}
+              </button>
+            ))}
+            {visibles.length === 0 && <p className="text-sm text-ink-400">Sin resultados. Usa &quot;Agregar&quot; para añadirla.</p>}
+          </div>
+        </div>
+
+        <div className="p-3.5 rounded-[10px] bg-brand-50 border border-brand-100 flex gap-3">
+          <span className="text-brand-600 shrink-0 mt-0.5"><Sparkle /></span>
+          <div className="text-[13px] text-brand-800 leading-snug">
+            <b>Tip:</b> ser honesto con tu nivel funciona mejor. Los reclutadores valoran más quien dice <i>&quot;básico&quot;</i> con seguridad que quien exagera.
+          </div>
         </div>
       </div>
 
-      {state.habilidades.length > 0 && (
-        <div>
-          <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-3">Tu nivel en lo seleccionado</div>
-          <div className="grid grid-cols-2 gap-2">
-            {state.habilidades.map((h) => (
-              <div key={h.nombre} className="card p-3">
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="font-medium text-[13px] text-ink-900 truncate flex-1 min-w-0 pr-1">{h.nombre}</span>
-                  <button onClick={() => toggle(h.nombre)} className="text-ink-400 hover:text-coral shrink-0"><Trash /></button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1 flex-1">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <button key={i} onClick={() => setLevel(h.nombre, i)}
-                        className={`flex-1 h-1.5 rounded-full transition-colors ${i <= h.nivel ? "bg-neon" : "bg-ink-200 hover:bg-ink-300"}`} />
-                    ))}
-                  </div>
-                  <span className="text-[10px] text-ink-500 shrink-0 w-16 text-right">{LEVELS[h.nivel - 1]}</span>
-                </div>
-              </div>
-            ))}
+      {/* Right — level selectors (sticky on desktop, below on mobile) */}
+      <div className={`mt-5 md:mt-0 md:sticky md:top-6 ${state.habilidades.length === 0 ? "hidden md:block" : ""}`}>
+        <div className="card p-4">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-neon mb-3">
+            Tu nivel en lo seleccionado
           </div>
-        </div>
-      )}
-
-      <div className="p-3.5 rounded-[10px] bg-brand-50 border border-brand-100 flex gap-3">
-        <span className="text-brand-600 shrink-0 mt-0.5"><Sparkle /></span>
-        <div className="text-[13px] text-brand-800 leading-snug">
-          <b>Tip:</b> ser honesto con tu nivel funciona mejor. Los reclutadores valoran más quien dice <i>&quot;básico&quot;</i> con seguridad que quien exagera.
+          {state.habilidades.length === 0 ? (
+            <div className="py-10 flex flex-col items-center gap-2 text-center">
+              <div className="h-10 w-10 rounded-full bg-ink-100 grid place-items-center text-ink-400 mb-1">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </div>
+              <p className="text-[13px] text-ink-500 leading-snug">Selecciona habilidades<br />para ajustar tu nivel</p>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {state.habilidades.map((h) => (
+                <div key={h.nombre} className="p-3 rounded-[8px] bg-ink-50 border border-ink-200">
+                  <div className="flex items-center justify-between mb-2.5">
+                    <span className="font-medium text-[13px] text-ink-900 truncate flex-1 min-w-0 pr-1">{h.nombre}</span>
+                    <button onClick={() => toggle(h.nombre)} className="text-ink-400 hover:text-coral shrink-0"><Trash /></button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1 flex-1">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <button key={i} onClick={() => setLevel(h.nombre, i)}
+                          className={`flex-1 h-1.5 rounded-full transition-colors ${i <= h.nivel ? "bg-neon" : "bg-ink-200 hover:bg-ink-300"}`} />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-ink-500 shrink-0 w-16 text-right">{LEVELS[h.nivel - 1]}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -292,7 +413,7 @@ function Step6({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
   const tema = state.colorTema || "#0f6e56";
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Preview card */}
       <div className="card overflow-hidden">
         <div className="h-2" style={{ backgroundColor: tema }} />
@@ -316,7 +437,7 @@ function Step6({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
 
       {/* Color picker */}
       <div className="card p-4">
-        <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-3">Color de tu CV</div>
+        <div className="text-[11px] font-medium uppercase tracking-wider text-ink-500 mb-3">Color de tu perfil</div>
         <div className="grid grid-cols-4 gap-2">
           {PALETA.map((p) => (
             <button
@@ -338,6 +459,14 @@ function Step6({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Template selector */}
+      <div className="card p-4">
+        <CVTemplateSelector
+          selected={(state.cvTemplate as TemplateId) || "clasica"}
+          onSelect={(id) => dispatch({ type: "SET", payload: { cvTemplate: id } })}
+        />
       </div>
 
       {/* Stats */}
@@ -468,7 +597,7 @@ export default function CrearPage() {
         </div>
 
         <main className="flex-1 overflow-y-auto">
-          <div className="py-6 px-5 max-w-lg mx-auto w-full">
+          <div className={`py-6 px-5 mx-auto w-full ${step === 1 || step === 2 ? "max-w-4xl md:px-10 md:py-8" : "max-w-lg"}`}>
             <div className="text-xs font-medium uppercase tracking-wider text-neon">Paso {step}</div>
             <h1 className="mt-1 text-[24px] leading-tight font-semibold">
               {step === 1 && "Información personal"}

@@ -3,17 +3,27 @@ import { renderToStream } from "@react-pdf/renderer";
 import { createElement } from "react";
 import { prisma } from "@/lib/prisma";
 import { CVDocument } from "@/components/pdf/CVDocument";
+import type { TemplateId } from "@/components/pdf/shared/pdfTypes";
 
-export async function GET(_req: NextRequest, ctx: RouteContext<"/api/cv/[id]">) {
+const VALID_TEMPLATES: TemplateId[] = [
+  "clasica", "ejecutiva", "tech", "minimalista", "compacta", "internacional", "creativa",
+];
+
+export async function GET(req: NextRequest, ctx: RouteContext<"/api/cv/[id]">) {
   try {
     const { id } = await ctx.params;
+    const raw = req.nextUrl.searchParams.get("template") ?? "clasica";
+    const templateId: TemplateId = (VALID_TEMPLATES.includes(raw as TemplateId)
+      ? raw
+      : "clasica") as TemplateId;
+    const isPreview = req.nextUrl.searchParams.get("preview") === "1";
 
     const perfil = await prisma.perfil.findUnique({
       where: { id },
       include: {
         habilidades: true,
-        proyectos: true,
-        formacion: true,
+        proyectos:   true,
+        formacion:   true,
         experiencia: true,
       },
     });
@@ -23,7 +33,7 @@ export async function GET(_req: NextRequest, ctx: RouteContext<"/api/cv/[id]">) 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const stream = await renderToStream(createElement(CVDocument, { perfil }) as any);
+    const stream = await renderToStream(createElement(CVDocument, { perfil, templateId }) as any);
 
     const chunks: Uint8Array[] = [];
     for await (const chunk of stream as AsyncIterable<Buffer>) {
@@ -35,7 +45,9 @@ export async function GET(_req: NextRequest, ctx: RouteContext<"/api/cv/[id]">) 
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="cv-${perfil.slug}.pdf"`,
+        "Content-Disposition": isPreview
+          ? "inline"
+          : `attachment; filename="cv-${perfil.slug}-${templateId}.pdf"`,
         "Content-Length": buffer.length.toString(),
       },
     });
