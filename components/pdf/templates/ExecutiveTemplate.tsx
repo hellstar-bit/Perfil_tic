@@ -58,7 +58,7 @@ export function ExecutiveTemplate({ perfil }: { perfil: PerfilData }) {
     perfil.email,
     perfil.telefono,
     `${perfil.municipio}, ${perfil.departamento}`,
-    `perfiltic.co/${perfil.slug}`,
+    `StartIA.co/${perfil.slug}`,
   ].filter(Boolean);
 
   const half = Math.ceil(perfil.habilidades.length / 2);
@@ -79,7 +79,7 @@ export function ExecutiveTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Perfil Profesional ── */}
         {!!perfil.frase?.trim() && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="PERFIL PROFESIONAL" />
             <Text style={{ fontSize: 10, color: "#444", lineHeight: 1.55, fontStyle: "italic", textAlign: "center" }}>
               {perfil.frase}
@@ -89,7 +89,7 @@ export function ExecutiveTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Habilidades ── */}
         {perfil.habilidades.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="HABILIDADES" />
             <View style={s.skillsWrap}>
               <View style={s.skillsCol}>
@@ -114,10 +114,10 @@ export function ExecutiveTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Experiencia ── */}
         {perfil.experiencia.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="EXPERIENCIA" />
             {perfil.experiencia.map((e) => (
-              <View key={e.id} style={s.itemWrap}>
+              <View key={e.id} style={s.itemWrap} wrap={false}>
                 <View style={s.itemRow}>
                   <Text style={s.itemTitle}>{e.cargo}  —  {e.empresa}</Text>
                   <Text style={s.itemPeriod}>{e.periodo}</Text>
@@ -131,10 +131,10 @@ export function ExecutiveTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Formación ── */}
         {perfil.formacion.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="FORMACION" />
             {perfil.formacion.map((f) => (
-              <View key={f.id} style={s.itemWrap}>
+              <View key={f.id} style={s.itemWrap} wrap={false}>
                 <View style={s.itemRow}>
                   <Text style={s.itemTitle}>{f.programa}  —  {f.institucion}</Text>
                   <Text style={s.itemPeriod}>{f.anioInicio} — {f.anioFin}</Text>
@@ -147,12 +147,12 @@ export function ExecutiveTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Proyectos ── */}
         {perfil.proyectos.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="PROYECTOS" />
             {perfil.proyectos.map((p) => {
               const { tipo, techs } = parseTag(p.tag);
               return (
-                <View key={p.id} style={s.projWrap}>
+                <View key={p.id} style={s.projWrap} wrap={false}>
                   <Text style={s.projTitle}>{p.titulo}{tipo ? `  ·  ${tipo}` : ""}</Text>
                   {!!p.descripcion && <Text style={s.projDesc}>{p.descripcion}</Text>}
                   {techs.length > 0 && <Text style={s.projTechs}>{techs.join("  ·  ")}</Text>}

@@ -22,7 +22,8 @@
       "Bash(npm install *)",
       "Bash(node -e \"const m = require\\('./node_modules/@mistralai/mistralai/package.json'\\); console.log\\(m.version\\)\")",
       "Bash(node -e \"require\\('dotenv'\\).config\\({path:'.env'}\\); console.log\\('KEY:', process.env.MISTRAL_API_KEY ? 'present \\(' + process.env.MISTRAL_API_KEY.length + ' chars\\)' : 'MISSING'\\)\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const p=require\\('./node_modules/next/package.json'\\); console.log\\(p.version\\)\")"
     ]
   }
 }

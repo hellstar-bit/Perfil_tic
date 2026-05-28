@@ -18,9 +18,10 @@ const TOOLBAR_H = 40;
 interface Props {
   perfilId: string;
   initialTemplate: string;
+  isOwner?: boolean;
 }
 
-export function CVPreviewPanel({ perfilId, initialTemplate }: Props) {
+export function CVPreviewPanel({ perfilId, initialTemplate, isOwner = false }: Props) {
   const [selected, setSelected] = useState<TemplateId>((initialTemplate as TemplateId) || "clasica");
   const [loading, setLoading] = useState(true);
   const [pageH, setPageH] = useState(0);
@@ -37,7 +38,7 @@ export function CVPreviewPanel({ perfilId, initialTemplate }: Props) {
   const src = `/api/cv/${perfilId}?template=${selected}&preview=1#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
 
   return (
-    <div className="card overflow-hidden sticky top-20">
+    <div className="card overflow-hidden">
       {/* Header */}
       <div className="px-4 py-3 border-b border-ink-200 flex items-center justify-between">
         <div>
@@ -87,40 +88,42 @@ export function CVPreviewPanel({ perfilId, initialTemplate }: Props) {
         )}
       </div>
 
-      {/* Template switcher */}
-      <div className="p-3 border-t border-ink-200">
-        <div className="text-[10px] text-ink-400 mb-2 font-medium">Plantilla</div>
-        <div className="grid grid-cols-4 gap-1.5">
-          {TEMPLATES.map((tpl) => {
-            const Thumb = PREVIEW_MAP[tpl.id];
-            const isSelected = selected === tpl.id;
-            return (
-              <button
-                key={tpl.id}
-                onClick={() => { setLoading(true); setSelected(tpl.id); }}
-                title={tpl.nombre}
-                className={`relative overflow-hidden rounded-[5px] border-2 transition-all focus:outline-none ${
-                  isSelected
-                    ? "border-neon shadow-[0_0_0_2px_rgba(0,229,160,0.2)]"
-                    : "border-ink-200 hover:border-ink-300"
-                }`}
-                style={{ paddingBottom: "141.4%" }}
-              >
-                <div className="absolute inset-0">
-                  <Thumb />
-                </div>
-                {isSelected && (
-                  <div className="absolute top-1 right-1 h-3.5 w-3.5 rounded-full bg-neon grid place-items-center z-10">
-                    <svg viewBox="0 0 14 14" width="8" height="8" fill="none" stroke="#0E0E0E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2.5 7l3.5 3.5 5.5-6" />
-                    </svg>
+      {/* Template switcher — only for profile owner */}
+      {isOwner && (
+        <div className="p-3 border-t border-ink-200">
+          <div className="text-[10px] text-ink-400 mb-2 font-medium">Plantilla</div>
+          <div className="grid grid-cols-4 gap-1.5">
+            {TEMPLATES.map((tpl) => {
+              const Thumb = PREVIEW_MAP[tpl.id];
+              const isSelected = selected === tpl.id;
+              return (
+                <button
+                  key={tpl.id}
+                  onClick={() => { setLoading(true); setSelected(tpl.id); }}
+                  title={tpl.nombre}
+                  className={`relative overflow-hidden rounded-[5px] border-2 transition-all focus:outline-none ${
+                    isSelected
+                      ? "border-neon shadow-[0_0_0_2px_rgba(0,229,160,0.2)]"
+                      : "border-ink-200 hover:border-ink-300"
+                  }`}
+                  style={{ paddingBottom: "141.4%" }}
+                >
+                  <div className="absolute inset-0">
+                    <Thumb />
                   </div>
-                )}
-              </button>
-            );
-          })}
+                  {isSelected && (
+                    <div className="absolute top-1 right-1 h-3.5 w-3.5 rounded-full bg-neon grid place-items-center z-10">
+                      <svg viewBox="0 0 14 14" width="8" height="8" fill="none" stroke="#0E0E0E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M2.5 7l3.5 3.5 5.5-6" />
+                      </svg>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

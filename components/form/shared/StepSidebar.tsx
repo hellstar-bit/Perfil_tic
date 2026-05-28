@@ -1,6 +1,7 @@
 "use client";
 
 import { Icons } from "./Icons";
+import { Logo } from "@/components/Logo";
 
 const STEPS = [
   { n: 1, label: "Datos personales",  sub: "Tu información básica" },
@@ -8,7 +9,8 @@ const STEPS = [
   { n: 3, label: "Formación",         sub: "Estudios y cursos" },
   { n: 4, label: "Proyectos",         sub: "Lo que has construido" },
   { n: 5, label: "Experiencia",       sub: "Dónde has trabajado" },
-  { n: 6, label: "Vista previa",      sub: "Revisa y publica" },
+  { n: 6, label: "Perfil profesional",sub: "Tu frase con IA" },
+  { n: 7, label: "Vista previa",      sub: "Revisa y publica" },
 ];
 
 interface Props {
@@ -27,14 +29,7 @@ export function StepSidebar({ current, onSalir }: Props) {
     >
       {/* Logo */}
       <div className="px-6 py-5 border-b border-ink-200 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="h-7 aspect-square rounded-[7px] bg-neon grid place-items-center text-noir">
-            <Icons.Logo width="55%" height="55%" />
-          </div>
-          <span className="font-semibold text-ink-900 tracking-tight text-[15px]">
-            Perfil<span className="text-neon">TIC</span>
-          </span>
-        </div>
+        <Logo />
       </div>
 
       {/* Progress summary */}

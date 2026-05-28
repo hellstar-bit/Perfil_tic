@@ -1,6 +1,7 @@
 "use client";
 
 import { useReducer, useState } from "react";
+import { Logo } from "@/components/Logo";
 import { useRouter } from "next/navigation";
 import { LocationSelect } from "@/components/form/LocationSelect";
 import { HABILIDADES_TIC, CATEGORIAS } from "@/lib/habilidades";
@@ -39,15 +40,6 @@ const Check = () => <svg viewBox="0 0 24 24" width="14" height="14" fill="none" 
 const Sparkle = () => <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8M17.7 6.3l-2.8 2.8M9.1 14.9l-2.8 2.8"/></svg>;
 const Trash = () => <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>;
 const Save  = () => <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>;
-
-const Logo = () => (
-  <div className="flex items-center gap-2">
-    <div className="h-7 aspect-square rounded-[7px] bg-neon grid place-items-center text-noir">
-      <svg viewBox="0 0 24 24" width="60%" height="60%" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 19V5h7a4 4 0 0 1 0 8H5"/></svg>
-    </div>
-    <span className="font-semibold text-ink-900 tracking-tight text-[15px]">Perfil<span className="text-neon">TIC</span></span>
-  </div>
-);
 
 const STEPS = [
   { n: 1, label: "Datos" }, { n: 2, label: "Habilidades" }, { n: 3, label: "Formación" },

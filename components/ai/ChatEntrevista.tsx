@@ -105,10 +105,11 @@ export function ChatEntrevista({ seccion, identificador = "anon", onDatos, onCer
   const [input, setInput] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [datosExtraidos, setDatosExtraidos] = useState<object | null>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const msgsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = msgsRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [mensajes]);
 
   const enviar = async () => {
@@ -154,7 +155,7 @@ export function ChatEntrevista({ seccion, identificador = "anon", onDatos, onCer
       </div>
 
       {/* Mensajes */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+      <div ref={msgsRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {mensajes.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
@@ -179,7 +180,6 @@ export function ChatEntrevista({ seccion, identificador = "anon", onDatos, onCer
             </div>
           </div>
         )}
-        <div ref={bottomRef} />
       </div>
 
       {/* Datos extraídos */}

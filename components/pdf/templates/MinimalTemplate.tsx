@@ -55,7 +55,7 @@ export function MinimalTemplate({ perfil }: { perfil: PerfilData }) {
     perfil.email,
     perfil.telefono,
     `${perfil.municipio}, ${perfil.departamento}`,
-    `perfiltic.co/${perfil.slug}`,
+    `StartIA.co/${perfil.slug}`,
   ].filter(Boolean).join("  |  ");
 
   const skillsText = perfil.habilidades.map((h) => h.nombre).join("  ·  ");
@@ -72,7 +72,7 @@ export function MinimalTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Perfil ── */}
         {!!perfil.frase?.trim() && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="PERFIL PROFESIONAL" />
             <Text style={{ fontSize: 10, color: GRAY, lineHeight: 1.6 }}>{perfil.frase}</Text>
           </View>
@@ -80,7 +80,7 @@ export function MinimalTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Habilidades ── */}
         {perfil.habilidades.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="HABILIDADES" />
             <Text style={s.skills}>{skillsText}</Text>
           </View>
@@ -88,10 +88,10 @@ export function MinimalTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Experiencia ── */}
         {perfil.experiencia.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="EXPERIENCIA" />
             {perfil.experiencia.map((e) => (
-              <View key={e.id} style={s.itemWrap}>
+              <View key={e.id} style={s.itemWrap} wrap={false}>
                 <View style={s.itemRow}>
                   <Text style={s.itemTitle}>{e.cargo}</Text>
                   <Text style={s.itemPeriod}>{e.periodo}</Text>
@@ -105,10 +105,10 @@ export function MinimalTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Formación ── */}
         {perfil.formacion.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="FORMACION" />
             {perfil.formacion.map((f) => (
-              <View key={f.id} style={s.itemWrap}>
+              <View key={f.id} style={s.itemWrap} wrap={false}>
                 <View style={s.itemRow}>
                   <Text style={s.itemTitle}>{f.programa}</Text>
                   <Text style={s.itemPeriod}>{f.anioInicio} — {f.anioFin}</Text>
@@ -121,12 +121,12 @@ export function MinimalTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Proyectos ── */}
         {perfil.proyectos.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="PROYECTOS" />
             {perfil.proyectos.map((p) => {
               const { tipo, techs } = parseTag(p.tag);
               return (
-                <View key={p.id} style={s.projWrap}>
+                <View key={p.id} style={s.projWrap} wrap={false}>
                   <View style={s.projRow}>
                     <Text style={s.projName}>{p.titulo}{tipo ? `  ·  ${tipo}` : ""}</Text>
                   </View>

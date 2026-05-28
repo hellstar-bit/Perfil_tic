@@ -78,7 +78,7 @@ export function TechTemplate({ perfil }: { perfil: PerfilData }) {
           <View style={s.contactRow}><Text style={s.contactTx}>{perfil.email}</Text></View>
           {!!perfil.telefono && <View style={s.contactRow}><Text style={s.contactTx}>{perfil.telefono}</Text></View>}
           <View style={s.contactRow}><Text style={s.contactTx}>{perfil.municipio}, {perfil.departamento}</Text></View>
-          <View style={s.contactRow}><Text style={s.contactTx}>perfiltic.co/{perfil.slug}</Text></View>
+          <View style={s.contactRow}><Text style={s.contactTx}>StartIA.co/{perfil.slug}</Text></View>
 
           {perfil.habilidades.length > 0 && (
             <View>
@@ -104,24 +104,24 @@ export function TechTemplate({ perfil }: { perfil: PerfilData }) {
           </View>
 
           <View style={s.footer}>
-            <Text style={s.footerTx}>Generado por PerfilTIC  ·  perfiltic.co/{perfil.slug}</Text>
+            <Text style={s.footerTx}>Generado por StartIA  ·  StartIA.co/{perfil.slug}</Text>
           </View>
         </View>
 
         {/* ══ MAIN ══ */}
         <View style={s.main}>
           {!!perfil.frase?.trim() && (
-            <View>
+            <View wrap={false}>
               <Text style={[s.mainHead, { marginTop: 0, color: accent }]}>PERFIL PROFESIONAL</Text>
               <Text style={s.frase}>{perfil.frase}</Text>
             </View>
           )}
 
           {perfil.experiencia.length > 0 && (
-            <View>
+            <View wrap={false}>
               <Text style={[s.mainHead, { color: accent }]}>EXPERIENCIA</Text>
               {perfil.experiencia.map((e) => (
-                <View key={e.id} style={s.tlItem}>
+                <View key={e.id} style={s.tlItem} wrap={false}>
                   <Text style={[s.tlYear, { color: accent }]}>{e.periodo}</Text>
                   <View style={s.tlContent}>
                     <Text style={s.tlTitle}>{e.cargo}</Text>
@@ -135,10 +135,10 @@ export function TechTemplate({ perfil }: { perfil: PerfilData }) {
           )}
 
           {perfil.formacion.length > 0 && (
-            <View>
+            <View wrap={false}>
               <Text style={[s.mainHead, { color: accent }]}>FORMACION</Text>
               {perfil.formacion.map((f) => (
-                <View key={f.id} style={s.tlItem}>
+                <View key={f.id} style={s.tlItem} wrap={false}>
                   <Text style={[s.tlYear, { color: accent }]}>{f.anioInicio} — {f.anioFin}</Text>
                   <View style={s.tlContent}>
                     <Text style={s.tlTitle}>{f.programa}</Text>
@@ -151,12 +151,12 @@ export function TechTemplate({ perfil }: { perfil: PerfilData }) {
           )}
 
           {perfil.proyectos.length > 0 && (
-            <View>
+            <View wrap={false}>
               <Text style={[s.mainHead, { color: accent }]}>PROYECTOS DESTACADOS</Text>
               {perfil.proyectos.slice(0, 4).map((p) => {
                 const { tipo, techs } = parseTag(p.tag);
                 return (
-                  <View key={p.id} style={s.projCard}>
+                  <View key={p.id} style={s.projCard} wrap={false}>
                     <View style={s.projRow}>
                       <Text style={s.projName}>{p.titulo}</Text>
                       {!!tipo && <Text style={[s.projTipo, { color: accent }]}>{tipo}</Text>}

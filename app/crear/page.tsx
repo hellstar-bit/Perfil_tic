@@ -1,6 +1,7 @@
 "use client";
 
-import { useReducer, useState, useEffect } from "react";
+import { useReducer, useState, useEffect, useRef } from "react";
+import { Logo } from "@/components/Logo";
 import { useRouter } from "next/navigation";
 import { LocationSelect } from "@/components/form/LocationSelect";
 import { HABILIDADES_TIC, CATEGORIAS } from "@/lib/habilidades";
@@ -47,7 +48,7 @@ const INITIAL: State = {
   habilidades: [], formaciones: [], proyectos: [], experiencias: [],
 };
 
-const STORAGE_KEY = "perfiltic-draft";
+const STORAGE_KEY = "StartIA-draft";
 
 function reducer(state: State, action: Action): State {
   if (action.type === "RESET") return INITIAL;
@@ -77,22 +78,14 @@ const Eye = () => (
   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
 );
 
-const Logo = () => (
-  <div className="flex items-center gap-2">
-    <div className="h-7 aspect-square rounded-[7px] bg-neon grid place-items-center text-noir">
-      <svg viewBox="0 0 24 24" width="60%" height="60%" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 19V5h7a4 4 0 0 1 0 8H5"/></svg>
-    </div>
-    <span className="font-semibold text-ink-900 tracking-tight text-[15px]">Perfil<span className="text-neon">TIC</span></span>
-  </div>
-);
-
 const STEPS = [
   { n: 1, label: "Datos" },
   { n: 2, label: "Habilidades" },
   { n: 3, label: "Formación" },
   { n: 4, label: "Proyectos" },
   { n: 5, label: "Experiencia" },
-  { n: 6, label: "Vista previa" },
+  { n: 6, label: "Perfil" },
+  { n: 7, label: "Vista previa" },
 ];
 
 const LEVELS = ["Sé poco", "Básico", "Intermedio", "Avanzado", "Experto"];
@@ -120,7 +113,6 @@ function Step1({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
     { label: "Ubicación", ok: !!(state.departamento && state.municipio) },
     { label: "Correo",    ok: !!state.email },
     { label: "Teléfono",  ok: !!state.telefono },
-    { label: "Frase",     ok: !!state.frase },
     { label: "Modalidad", ok: !!state.modalidad },
   ];
   const done = CHECKS.filter((c) => c.ok).length;
@@ -174,39 +166,14 @@ function Step1({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
         </div>
 
         <div>
-          <SectionLabel>Presentación</SectionLabel>
-          <div className="space-y-3">
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[11px] font-medium text-ink-600 tracking-wide">Frase de presentación</label>
-                <span className="text-[10px] font-mono text-ink-500">{state.frase.length}/280</span>
-              </div>
-              <textarea
-                className="field h-24 py-2.5 resize-none"
-                value={state.frase}
-                onChange={f("frase")}
-                maxLength={280}
-                placeholder="Cuéntanos brevemente sobre ti y lo que buscas..."
-              />
-              <BtnGenerarFrase
-                nombre={state.nombre}
-                cargo={state.cargo}
-                habilidades={state.habilidades.map((h) => h.nombre)}
-                experiencia={state.experiencias.map((e) => e.cargo)}
-                formacion={state.formaciones.map((f) => f.nombre)}
-                onSelect={(frase) => dispatch({ type: "SET", payload: { frase } })}
-              />
-            </div>
-            <div>
-              <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Modalidad preferida</label>
-              <select className="field" value={state.modalidad} onChange={f("modalidad")}>
-                <option value="">Selecciona...</option>
-                <option value="Remoto">Remoto</option>
-                <option value="Híbrido">Híbrido</option>
-                <option value="Presencial">Presencial</option>
-              </select>
-            </div>
-          </div>
+          <SectionLabel>Disponibilidad</SectionLabel>
+          <label className="text-[11px] font-medium text-ink-600 mb-1.5 block tracking-wide">Modalidad preferida</label>
+          <select className="field" value={state.modalidad} onChange={f("modalidad")}>
+            <option value="">Selecciona...</option>
+            <option value="Remoto">Remoto</option>
+            <option value="Híbrido">Híbrido</option>
+            <option value="Presencial">Presencial</option>
+          </select>
         </div>
       </div>
 
@@ -416,8 +383,45 @@ function Step2({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
   );
 }
 
-/* ─── Step 6 ─── */
+/* ─── Step 6: Perfil profesional (frase) ─── */
 function Step6({ state, dispatch }: { state: State; dispatch: React.Dispatch<Action> }) {
+  const f = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+    dispatch({ type: "SET", payload: { frase: e.target.value } });
+  const nombre = [state.nombre, state.apellido].filter(Boolean).join(" ");
+
+  return (
+    <div className="space-y-5">
+      <p className="text-[14px] text-ink-600 leading-relaxed">
+        Esta frase aparece en tu CV y perfil público. La IA la genera usando todo lo que llenaste — edítala o elige la que más te represente.
+      </p>
+      <div>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-[11px] font-medium text-ink-600 tracking-wide">Frase de presentación</label>
+          <span className="text-[10px] font-mono text-ink-500">{state.frase.length}/280</span>
+        </div>
+        <textarea
+          className="field h-28 py-2.5 resize-none"
+          value={state.frase}
+          onChange={f}
+          maxLength={280}
+          placeholder="Cuéntanos brevemente sobre ti y lo que buscas…"
+        />
+      </div>
+      <BtnGenerarFrase
+        nombre={nombre}
+        cargo={state.cargo}
+        habilidades={state.habilidades.map((h) => h.nombre)}
+        experiencia={state.experiencias.map((e) => e.cargo)}
+        formacion={state.formaciones.map((fm) => fm.nombre)}
+        autoGenerate={!state.frase}
+        onSelect={(frase) => dispatch({ type: "SET", payload: { frase } })}
+      />
+    </div>
+  );
+}
+
+/* ─── Step 7: Vista previa ─── */
+function Step7({ state, dispatch }: { state: State; dispatch: React.Dispatch<Action> }) {
   const name = [state.nombre, state.apellido].filter(Boolean).join(" ");
   const inits = name.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
   const tema = state.colorTema || "#0f6e56";
@@ -509,10 +513,207 @@ function Step6({ state, dispatch }: { state: State; dispatch: React.Dispatch<Act
   );
 }
 
+/* ─── Step 0: Importar CV ─── */
+function Step0({ onImport, onSkip }: { onImport: (data: Partial<State>) => void; onSkip: () => void }) {
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [puestoObjetivo, setPuestoObjetivo] = useState("");
+  const [fileName, setFileName] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = async (file: File) => {
+    if (file.type !== "application/pdf") { setErrorMsg("Solo se aceptan archivos PDF"); return; }
+    setFileName(file.name);
+    setStatus("loading");
+    setErrorMsg("");
+    const form = new FormData();
+    form.append("archivo", file);
+    if (puestoObjetivo.trim()) form.append("puestoObjetivo", puestoObjetivo.trim());
+    try {
+      const res = await fetch("/api/ai/importar-cv", { method: "POST", body: form });
+      const data = await res.json();
+      if (!res.ok) { setErrorMsg(data.error ?? "Error al leer el CV"); setStatus("error"); return; }
+      onImport(data);
+    } catch {
+      setErrorMsg("Error de conexión. Intenta de nuevo.");
+      setStatus("error");
+    }
+  };
+
+  const isDragging = false;
+
+  return (
+    <div className="min-h-dvh flex flex-col" style={{ background: "#0E0E0E" }}>
+
+      {/* Top bar */}
+      <header className="px-6 py-4 flex items-center justify-between border-b border-white/[0.06] shrink-0">
+        <Logo />
+        <a href="/login" className="text-[12px] text-ink-500 hover:text-ink-700 transition-colors">
+          ¿Ya tienes cuenta? <span className="text-neon">Inicia sesión</span>
+        </a>
+      </header>
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col items-center justify-center px-5 py-10">
+
+        {/* Heading */}
+        <div className="text-center mb-10 max-w-lg">
+          <div className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-neon mb-5 px-3 py-1.5 rounded-full border border-neon/20" style={{ background: "rgba(0,229,160,0.06)" }}>
+            <Sparkle /> IA incluida gratis
+          </div>
+          <h1 className="text-[30px] font-bold text-ink-900 leading-tight mb-3">
+            Crea tu perfil profesional
+          </h1>
+          <p className="text-[14px] text-ink-500 leading-relaxed">
+            Importa tu CV y la IA completa todo — o empieza desde cero paso a paso.
+          </p>
+        </div>
+
+        {/* Cards */}
+        <div className="grid md:grid-cols-2 gap-4 w-full max-w-2xl">
+
+          {/* ── Card A: Importar CV ── */}
+          <div className="rounded-[20px] border border-white/[0.08] p-6 flex flex-col gap-4" style={{ background: "#111111" }}>
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-[10px] grid place-items-center shrink-0" style={{ background: "rgba(0,229,160,0.10)" }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#00E5A0" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-[14px] font-bold text-ink-900">Importar mi CV</div>
+                <div className="text-[11px] text-ink-500">La IA extrae y organiza todo</div>
+              </div>
+            </div>
+
+            {/* Drop zone */}
+            <div
+              onClick={() => status !== "loading" && inputRef.current?.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
+              className={`rounded-[12px] border-2 border-dashed flex flex-col items-center justify-center gap-2.5 py-6 transition-all select-none
+                ${status === "loading"
+                  ? "border-neon/30 cursor-wait"
+                  : fileName
+                  ? "border-neon/50 cursor-pointer"
+                  : "border-white/[0.10] hover:border-neon/40 cursor-pointer"}`}
+              style={{ background: status === "loading" || fileName ? "rgba(0,229,160,0.04)" : "rgba(255,255,255,0.02)" }}
+            >
+              {status === "loading" ? (
+                <>
+                  <div className="h-7 w-7 rounded-full border-[2.5px] border-neon border-t-transparent animate-spin" />
+                  <div className="text-center">
+                    <p className="text-[13px] font-medium text-ink-700">Analizando con IA…</p>
+                    <p className="text-[11px] text-ink-500 mt-0.5">Esto tarda unos segundos</p>
+                  </div>
+                </>
+              ) : fileName ? (
+                <>
+                  <div className="h-8 w-8 rounded-full bg-neon/10 grid place-items-center text-neon">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[12px] font-semibold text-neon truncate max-w-[180px]">{fileName}</p>
+                    <p className="text-[11px] text-ink-500 mt-0.5">Haz clic para cambiar el archivo</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-ink-500">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  <div className="text-center">
+                    <p className="text-[13px] font-semibold text-ink-700">Arrastra tu CV aquí</p>
+                    <p className="text-[11px] text-ink-500 mt-0.5">o haz clic para elegir · PDF · Máx 10 MB</p>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <input ref={inputRef} type="file" accept=".pdf,application/pdf" className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+
+            {/* Puesto objetivo */}
+            <div>
+              <label className="text-[11px] font-semibold text-ink-500 uppercase tracking-widest block mb-1.5">
+                ¿Para qué puesto? <span className="normal-case font-normal">— opcional</span>
+              </label>
+              <textarea
+                className="field resize-none text-[13px] py-2.5 leading-relaxed"
+                style={{ minHeight: 72 }}
+                placeholder={"Ej: Front-end en fintech, React + TypeScript"}
+                value={puestoObjetivo}
+                onChange={(e) => setPuestoObjetivo(e.target.value)}
+                maxLength={400}
+                disabled={status === "loading"}
+              />
+              <p className="text-[11px] text-ink-600 mt-1 leading-snug">
+                La IA prioriza las habilidades y ajusta el cargo para ese rol.
+              </p>
+            </div>
+
+            {errorMsg && <p className="text-[12px] text-red-400 -mt-1">{errorMsg}</p>}
+          </div>
+
+          {/* ── Card B: Desde cero ── */}
+          <div className="rounded-[20px] border border-white/[0.08] p-6 flex flex-col" style={{ background: "#111111" }}>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-9 w-9 rounded-[10px] bg-ink-100 grid place-items-center shrink-0">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="text-ink-600">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-[14px] font-bold text-ink-900">Empezar desde cero</div>
+                <div className="text-[11px] text-ink-500">Completa cada sección guiado</div>
+              </div>
+            </div>
+
+            <div className="flex-1 space-y-3 mb-6">
+              {[
+                ["Datos personales", "Nombre, cargo, contacto y ubicación"],
+                ["Habilidades TIC", "Tus herramientas con nivel de dominio"],
+                ["Formación", "Estudios, cursos y certificaciones"],
+                ["Proyectos", "Lo que has construido con tecnología"],
+                ["Experiencia", "Empleos, freelances y voluntariados"],
+                ["Perfil con IA", "Tu frase generada con toda tu info"],
+              ].map(([title, desc], i) => (
+                <div key={title} className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full grid place-items-center text-[10px] font-bold shrink-0 mt-0.5"
+                    style={{ background: "rgba(255,255,255,0.05)", color: "#666" }}>
+                    {i + 1}
+                  </div>
+                  <div>
+                    <div className="text-[12px] font-semibold text-ink-700">{title}</div>
+                    <div className="text-[11px] text-ink-500 mt-0.5">{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={onSkip}
+              className="h-11 w-full rounded-[10px] border border-white/[0.10] text-[13px] font-medium text-ink-600 hover:text-ink-900 hover:border-white/20 transition-all"
+            >
+              Empezar desde cero →
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main Page ─── */
 export default function CrearPage() {
   const router = useRouter();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [state, dispatch] = useReducer(reducer, INITIAL);
   const [hydrated, setHydrated] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -559,6 +760,15 @@ export default function CrearPage() {
       setSubmitting(false);
     }
   };
+
+  if (step === 0) {
+    return (
+      <Step0
+        onImport={(data) => { dispatch({ type: "SET", payload: data }); setStep(1); }}
+        onSkip={() => setStep(1)}
+      />
+    );
+  }
 
   /* Full-screen steps 3, 4, 5 */
   if (step === 3) {
@@ -624,13 +834,15 @@ export default function CrearPage() {
             <h1 className="mt-1 text-[24px] leading-tight font-semibold">
               {step === 1 && "Información personal"}
               {step === 2 && "¿Qué herramientas TIC manejas?"}
-              {step === 6 && "Vista previa"}
+              {step === 6 && "Tu perfil profesional"}
+              {step === 7 && "Vista previa"}
             </h1>
-            {step === 6 && <p className="mt-2 text-[14px] text-ink-600">Revisa que todo esté correcto antes de publicar tu perfil.</p>}
+            {step === 7 && <p className="mt-2 text-[14px] text-ink-600">Revisa que todo esté correcto antes de publicar tu perfil.</p>}
             <div className="mt-5">
               {step === 1 && <Step1 state={state} dispatch={dispatch} />}
               {step === 2 && <Step2 state={state} dispatch={dispatch} />}
               {step === 6 && <Step6 state={state} dispatch={dispatch} />}
+              {step === 7 && <Step7 state={state} dispatch={dispatch} />}
             </div>
             {error && <p className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">{error}</p>}
           </div>
@@ -642,7 +854,7 @@ export default function CrearPage() {
               <Back /> Anterior
             </button>
           )}
-          {step < 6 ? (
+          {step < 7 ? (
             <button onClick={() => canAdvance() && setStep((s) => s + 1)}
               className={`btn-primary h-12 flex-[1.4] gap-2 ${!canAdvance() ? "opacity-50 cursor-not-allowed" : ""}`}>
               Siguiente <Arrow />

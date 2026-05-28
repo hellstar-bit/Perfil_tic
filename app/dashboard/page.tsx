@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { logout } from "@/lib/actions/auth";
+import { Logo } from "@/components/Logo";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -18,16 +19,7 @@ export default async function DashboardPage() {
       {/* Nav */}
       <header className="border-b border-ink-200" style={{ background: "#161616" }}>
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-7 aspect-square rounded-[7px] bg-neon grid place-items-center text-noir">
-              <svg viewBox="0 0 24 24" width="60%" height="60%" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 19V5h7a4 4 0 0 1 0 8H5" />
-              </svg>
-            </div>
-            <span className="font-semibold text-ink-900 tracking-tight text-[15px]">
-              Perfil<span className="text-neon">TIC</span>
-            </span>
-          </div>
+          <Logo />
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted hidden sm:block">{session.user.name ?? session.user.email}</span>
             <form action={logout}>
@@ -44,7 +36,7 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold text-ink-900 mb-1">
           Hola, {session.user.name?.split(" ")[0] ?? "bienvenido"}
         </h1>
-        <p className="text-muted mb-8">Este es tu espacio en PerfilTIC.</p>
+        <p className="text-muted mb-8">Este es tu espacio en StartIA.</p>
 
         {perfil ? (
           <div className="card p-6 max-w-lg">

@@ -91,7 +91,7 @@ export function CreativeTemplate({ perfil }: { perfil: PerfilData }) {
           </View>
           <Text style={s.sName}>{perfil.nombre}</Text>
           <Text style={s.sCargo}>{perfil.cargo}</Text>
-          <Text style={s.sUrl}>perfiltic.co/{perfil.slug}</Text>
+          <Text style={s.sUrl}>StartIA.co/{perfil.slug}</Text>
 
           <Text style={s.sHead}>CONTACTO</Text>
           <View style={s.contactRow}><Text style={s.contactTx}>{perfil.email}</Text></View>
@@ -125,16 +125,16 @@ export function CreativeTemplate({ perfil }: { perfil: PerfilData }) {
         {/* ══ MAIN ══ */}
         <View style={s.main}>
           {!!perfil.frase?.trim() && (
-            <View style={s.fraseWrap}>
+            <View style={s.fraseWrap} wrap={false}>
               <Text style={s.frase}>{perfil.frase}</Text>
             </View>
           )}
 
           {perfil.experiencia.length > 0 && (
-            <View>
+            <View wrap={false}>
               <SecHeader label="EXPERIENCIA" />
               {perfil.experiencia.map((e) => (
-                <View key={e.id} style={s.tlWrap}>
+                <View key={e.id} style={s.tlWrap} wrap={false}>
                   <View style={s.tlDot} />
                   <View style={s.tlContent}>
                     <Text style={s.tlTitle}>{e.cargo}</Text>
@@ -148,10 +148,10 @@ export function CreativeTemplate({ perfil }: { perfil: PerfilData }) {
           )}
 
           {perfil.formacion.length > 0 && (
-            <View>
+            <View wrap={false}>
               <SecHeader label="FORMACION" />
               {perfil.formacion.map((f) => (
-                <View key={f.id} style={s.tlWrap}>
+                <View key={f.id} style={s.tlWrap} wrap={false}>
                   <View style={s.tlDot} />
                   <View style={s.tlContent}>
                     <Text style={s.tlTitle}>{f.programa}</Text>
@@ -164,12 +164,12 @@ export function CreativeTemplate({ perfil }: { perfil: PerfilData }) {
           )}
 
           {perfil.proyectos.length > 0 && (
-            <View>
+            <View wrap={false}>
               <SecHeader label="PROYECTOS" />
               {perfil.proyectos.slice(0, 4).map((p) => {
                 const { tipo, techs } = parseTag(p.tag);
                 return (
-                  <View key={p.id} style={s.projCard}>
+                  <View key={p.id} style={s.projCard} wrap={false}>
                     <View style={s.projRow}>
                       <Text style={s.projName}>{p.titulo}</Text>
                       {!!tipo && <Text style={s.projTipo}>{tipo}</Text>}

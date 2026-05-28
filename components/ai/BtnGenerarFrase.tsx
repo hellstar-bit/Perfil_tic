@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Estado = "idle" | "loading" | "opciones" | "error";
 
@@ -11,6 +11,7 @@ interface Props {
   experiencia: string[];
   formacion: string[];
   identificador?: string;
+  autoGenerate?: boolean;
   onSelect: (frase: string) => void;
 }
 
@@ -30,10 +31,11 @@ function SkeletonCard() {
   );
 }
 
-export function BtnGenerarFrase({ nombre, cargo, habilidades, experiencia, formacion, identificador = "anon", onSelect }: Props) {
+export function BtnGenerarFrase({ nombre, cargo, habilidades, experiencia, formacion, identificador = "anon", autoGenerate = false, onSelect }: Props) {
   const [estado, setEstado] = useState<Estado>("idle");
   const [opciones, setOpciones] = useState<string[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
+  const triggered = useRef(false);
 
   const puedeGenerar = nombre.trim() && cargo.trim();
 
@@ -55,6 +57,14 @@ export function BtnGenerarFrase({ nombre, cargo, habilidades, experiencia, forma
       setEstado("error");
     }
   };
+
+  useEffect(() => {
+    if (autoGenerate && !triggered.current && puedeGenerar) {
+      triggered.current = true;
+      generar();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const usar = (frase: string) => {
     onSelect(frase);

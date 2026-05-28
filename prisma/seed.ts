@@ -11,7 +11,7 @@ function slug(text: string): string {
     .replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-");
 }
 
-const SEED_SLUGS = ["laura-mendoza", "juan-luis-campo-simanca", "andres-felipe-torres"];
+const SEED_SLUGS = ["laura-mendoza-dev1", "juan-luis-campo-simanca-dev2", "andres-felipe-torres-dev3"];
 const SEED_EMAILS = ["laura.mendoza@perfiltic.dev", "juan.campo@perfiltic.dev", "andres.torres@perfiltic.dev"];
 
 async function main() {
@@ -29,7 +29,7 @@ async function main() {
   {
     const p = await prisma.perfil.create({
       data: {
-        slug: "laura-mendoza",
+        slug: "laura-mendoza-dev1",
         nombre: "Laura Mendoza",
         cargo: "Desarrolladora Front-end Junior",
         departamento: "Atlántico",
@@ -178,7 +178,7 @@ async function main() {
   {
     const p = await prisma.perfil.create({
       data: {
-        slug: "juan-luis-campo-simanca",
+        slug: "juan-luis-campo-simanca-dev2",
         nombre: "Juan Luis Campo Simanca",
         cargo: "Desarrollador Full Stack",
         departamento: "Bolívar",
@@ -238,7 +238,7 @@ async function main() {
   {
     const p = await prisma.perfil.create({
       data: {
-        slug: "andres-felipe-torres",
+        slug: "andres-felipe-torres-dev3",
         nombre: "Andrés Felipe Torres",
         cargo: "Técnico de Soporte TIC",
         departamento: "Antioquia",

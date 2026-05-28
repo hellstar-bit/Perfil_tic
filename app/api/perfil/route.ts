@@ -70,16 +70,15 @@ function toSlug(text: string): string {
     .replace(/\s+/g, "-");
 }
 
+function shortId() {
+  return Math.random().toString(36).slice(2, 6); // 4 base-36 chars ≈ 1.6M combos
+}
+
 async function uniqueSlug(base: string): Promise<string> {
-  const existing = await prisma.perfil.findMany({
-    where: { slug: { startsWith: base } },
-    select: { slug: true },
-  });
-  const taken = new Set(existing.map((p: { slug: string }) => p.slug));
-  if (!taken.has(base)) return base;
-  let i = 2;
-  while (taken.has(`${base}-${i}`)) i++;
-  return `${base}-${i}`;
+  const slug = `${base}-${shortId()}`;
+  const existing = await prisma.perfil.findUnique({ where: { slug } });
+  if (!existing) return slug;
+  return uniqueSlug(base); // collision retry (probability ~1 in 1.6M)
 }
 
 export async function POST(request: NextRequest) {

@@ -24,7 +24,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PerfilTIC — Tu perfil profesional en el sector TIC",
+  title: "StartIA — Tu perfil profesional en el sector TIC",
   description: "Crea tu perfil digital profesional para el sector tecnológico colombiano. Gratis, en 7 minutos.",
 };
 

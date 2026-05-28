@@ -59,7 +59,7 @@ export function InternationalTemplate({ perfil }: { perfil: PerfilData }) {
   const contactParts = [
     perfil.email,
     phone,
-    `perfiltic.co/${perfil.slug}`,
+    `StartIA.co/${perfil.slug}`,
   ].filter(Boolean).join("  ·  ");
 
   const half = Math.ceil(perfil.habilidades.length / 2);
@@ -78,7 +78,7 @@ export function InternationalTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Professional Summary ── */}
         {!!perfil.frase?.trim() && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="PROFESSIONAL SUMMARY" />
             <Text style={{ fontSize: 10, color: "#444", lineHeight: 1.5 }}>{perfil.frase}</Text>
           </View>
@@ -86,7 +86,7 @@ export function InternationalTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Skills ── */}
         {perfil.habilidades.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="SKILLS" />
             <View style={s.skillsWrap}>
               <View style={s.skillsCol}>
@@ -111,10 +111,10 @@ export function InternationalTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Work Experience ── */}
         {perfil.experiencia.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="WORK EXPERIENCE" />
             {perfil.experiencia.map((e) => (
-              <View key={e.id} style={s.itemWrap}>
+              <View key={e.id} style={s.itemWrap} wrap={false}>
                 <View style={s.itemRow}>
                   <Text style={s.itemTitle}>{e.cargo}  —  {e.empresa}</Text>
                   <Text style={s.itemPeriod}>{e.periodo}</Text>
@@ -128,10 +128,10 @@ export function InternationalTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Education ── */}
         {perfil.formacion.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="EDUCATION" />
             {perfil.formacion.map((f) => (
-              <View key={f.id} style={s.itemWrap}>
+              <View key={f.id} style={s.itemWrap} wrap={false}>
                 <View style={s.itemRow}>
                   <Text style={s.itemTitle}>{f.programa}  —  {f.institucion}</Text>
                   <Text style={s.itemPeriod}>{f.anioInicio} — {f.anioFin}</Text>
@@ -144,12 +144,12 @@ export function InternationalTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Projects ── */}
         {perfil.proyectos.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="PROJECTS" />
             {perfil.proyectos.map((p) => {
               const { tipo, techs } = parseTag(p.tag);
               return (
-                <View key={p.id} style={s.projWrap}>
+                <View key={p.id} style={s.projWrap} wrap={false}>
                   <Text style={s.projTitle}>{p.titulo}{tipo ? `  ·  ${tipo}` : ""}</Text>
                   {!!p.descripcion && <Text style={s.projDesc}>{p.descripcion}</Text>}
                   {techs.length > 0 && <Text style={s.projTechs}>{techs.join("  ·  ")}</Text>}

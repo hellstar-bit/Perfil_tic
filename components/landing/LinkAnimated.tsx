@@ -129,7 +129,7 @@ export function LinkAnimated() {
           </span>
         ) : (
           <>
-            <span style={{ color: "#5A5A55" }}>perfiltic.co/</span>
+            <span style={{ color: "#5A5A55" }}>StartIA.co/</span>
             <span style={{ color: "#00E5A0", fontWeight: 600 }}>{slug}</span>
             {showCursor && (
               <span

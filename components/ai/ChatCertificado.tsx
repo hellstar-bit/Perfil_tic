@@ -87,12 +87,13 @@ export function ChatCertificado({ onDatos, onCerrar, identificador = "anon" }: P
   const [analizando, setAnalizando] = useState(false);
   const [datosExtraidos, setDatosExtraidos] = useState<object | null>(null);
   const [dragging, setDragging] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const msgsRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const dragCounter = useRef(0);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = msgsRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [mensajes, enviando, analizando]);
 
   const onDragEnter = (e: React.DragEvent) => {
@@ -281,7 +282,7 @@ export function ChatCertificado({ onDatos, onCerrar, identificador = "anon" }: P
       </div>
 
       {/* Mensajes */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+      <div ref={msgsRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {mensajes.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             {m.role === "user" && m.esArchivo ? (
@@ -318,7 +319,6 @@ export function ChatCertificado({ onDatos, onCerrar, identificador = "anon" }: P
             </div>
           </div>
         )}
-        <div ref={bottomRef} />
       </div>
 
       {/* Panel de datos extraídos */}

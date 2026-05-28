@@ -48,7 +48,7 @@ export function CompactTemplate({ perfil }: { perfil: PerfilData }) {
     perfil.email,
     perfil.telefono,
     `${perfil.municipio}, ${perfil.departamento}`,
-    `perfiltic.co/${perfil.slug}`,
+    `StartIA.co/${perfil.slug}`,
   ].filter(Boolean).join("  ·  ");
 
   const skillsText = perfil.habilidades
@@ -66,7 +66,7 @@ export function CompactTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Perfil ── */}
         {!!perfil.frase?.trim() && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="PERFIL PROFESIONAL" />
             <Text style={{ fontSize: 8.5, color: "#444", lineHeight: 1.35 }}>{perfil.frase}</Text>
           </View>
@@ -74,7 +74,7 @@ export function CompactTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Habilidades ── */}
         {perfil.habilidades.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="HABILIDADES" />
             <Text style={s.skills}>{skillsText}</Text>
           </View>
@@ -82,10 +82,10 @@ export function CompactTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Experiencia ── */}
         {perfil.experiencia.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="EXPERIENCIA" />
             {perfil.experiencia.map((e) => (
-              <View key={e.id} style={s.itemWrap}>
+              <View key={e.id} style={s.itemWrap} wrap={false}>
                 <View style={s.itemRow}>
                   <Text style={s.itemTitle}>{e.cargo}  ·  {e.empresa}</Text>
                   <Text style={s.itemPeriod}>{e.periodo}</Text>
@@ -99,10 +99,10 @@ export function CompactTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Formación ── */}
         {perfil.formacion.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="FORMACION" />
             {perfil.formacion.map((f) => (
-              <View key={f.id} style={s.itemWrap}>
+              <View key={f.id} style={s.itemWrap} wrap={false}>
                 <View style={s.itemRow}>
                   <Text style={s.itemTitle}>{f.programa}  ·  {f.institucion}</Text>
                   <Text style={s.itemPeriod}>{f.anioInicio} — {f.anioFin}</Text>
@@ -115,12 +115,12 @@ export function CompactTemplate({ perfil }: { perfil: PerfilData }) {
 
         {/* ── Proyectos ── */}
         {perfil.proyectos.length > 0 && (
-          <View>
+          <View wrap={false}>
             <SecHeader label="PROYECTOS" />
             {perfil.proyectos.map((p) => {
               const { tipo, techs } = parseTag(p.tag);
               return (
-                <View key={p.id} style={s.itemWrap}>
+                <View key={p.id} style={s.itemWrap} wrap={false}>
                   <View style={s.itemRow}>
                     <Text style={s.itemTitle}>{p.titulo}{tipo ? `  ·  ${tipo}` : ""}</Text>
                     {!!p.enlace && <Text style={{ fontSize: 7.5, color: BLUE, marginLeft: 6 }}>{p.enlace}</Text>}

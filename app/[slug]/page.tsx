@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { ShareButtonMobile, ShareButtonDesktop, CopyButtonInline, CopyButtonDesktop } from "./ShareButtons";
 import { CVPreviewPanel } from "./CVPreviewPanel";
 import { logout } from "@/lib/actions/auth";
+import { Logo as LogoBrand } from "@/components/Logo";
 
 export const dynamic = "force-dynamic";
 
@@ -31,14 +32,7 @@ const Arrow = () => (
   <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
 );
 
-const Logo = () => (
-  <a href="/" className="flex items-center gap-2">
-    <div className="h-7 aspect-square rounded-[7px] bg-neon grid place-items-center text-noir">
-      <svg viewBox="0 0 24 24" width="60%" height="60%" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 19V5h7a4 4 0 0 1 0 8H5"/></svg>
-    </div>
-    <span className="font-semibold text-ink-900 tracking-tight text-[15px]">Perfil<span className="text-neon">TIC</span></span>
-  </a>
-);
+const Logo = () => <a href="/"><LogoBrand /></a>;
 
 function initials(name: string) {
   return name.split(" ").slice(0, 2).map(w => w[0]?.toUpperCase() ?? "").join("");
@@ -164,52 +158,84 @@ function PerfilMobile({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwne
       {/* Formación */}
       {perfil.formacion.length > 0 && (
         <section className="mt-2 px-5 py-6 border-b border-ink-200" style={{ background: "#161616" }}>
-          <h2 className="section-label mb-5">Formación</h2>
-          <ol className="relative border-l border-ink-200 pl-5 space-y-5">
-            {perfil.formacion.map((f: Formacion) => (
-              <li key={f.id} className="relative">
-                <span className="absolute -left-[26px] top-1 h-3 w-3 rounded-full border-2 border-neon" style={{ background: "#161616" }} />
-                <div className="text-[10px] font-mono text-ink-500">{f.anioInicio} — {f.anioFin}</div>
-                <div className="font-semibold text-[14px] text-ink-900 mt-0.5">{f.programa}</div>
-                <div className="text-[12px] text-ink-500">{f.institucion}</div>
-                <div className="text-[11px] text-ink-400">{f.nivel}</div>
-              </li>
-            ))}
-          </ol>
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="section-label">Formación</h2>
+            {perfil.formacion.length > 3 && (
+              <span className="text-[11px] text-ink-500">{perfil.formacion.length} · scroll ↓</span>
+            )}
+          </div>
+          <div className="relative">
+            <div className={perfil.formacion.length > 3 ? "max-h-[280px] overflow-y-auto pr-1 pl-3 -ml-3" : ""}>
+              <ol className="relative border-l border-ink-200 pl-5 space-y-4">
+                {perfil.formacion.map((f: Formacion) => (
+                  <li key={f.id} className="relative group">
+                    <span className="absolute -left-[26px] top-1.5 h-3 w-3 rounded-full border-2 border-neon group-hover:bg-neon transition-colors" style={{ background: "#161616" }} />
+                    <div className="rounded-[7px] px-2 py-1 hover:bg-white/[0.04] transition-colors">
+                      <div className="text-[10px] font-mono text-ink-500">{f.anioInicio} — {f.anioFin}</div>
+                      <div className="font-semibold text-[14px] text-ink-900 mt-0.5 leading-snug">{f.programa}</div>
+                      <div className="text-[12px] text-ink-500 mt-0.5">{f.institucion}</div>
+                      <div className="text-[11px] text-ink-400">{f.nivel}</div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            {perfil.formacion.length > 3 && (
+              <div className="absolute bottom-0 inset-x-0 h-10 pointer-events-none"
+                style={{ background: "linear-gradient(to bottom, transparent, #161616)" }} />
+            )}
+          </div>
         </section>
       )}
 
       {/* Experiencia */}
       {perfil.experiencia.length > 0 && (
         <section className="mt-2 px-5 py-6 border-b border-ink-200" style={{ background: "#161616" }}>
-          <h2 className="section-label mb-5">Experiencia</h2>
-          <ol className="relative border-l border-ink-200 pl-5 space-y-5">
-            {perfil.experiencia.map((e: Experiencia) => (
-              <li key={e.id} className="relative">
-                <span className="absolute -left-[26px] top-1 h-3 w-3 rounded-full border-2 border-neon" style={{ background: "#161616" }} />
-                <div className="text-[10px] font-mono text-ink-500">{e.periodo}</div>
-                <div className="font-semibold text-[14px] text-ink-900 mt-0.5">{e.cargo}</div>
-                <div className="text-[12px] text-ink-500">{e.empresa}</div>
-                <div className="text-[12px] text-ink-600 mt-1 leading-snug">{e.descripcion}</div>
-              </li>
-            ))}
-          </ol>
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="section-label">Experiencia</h2>
+            {perfil.experiencia.length > 3 && (
+              <span className="text-[11px] text-ink-500">{perfil.experiencia.length} · scroll ↓</span>
+            )}
+          </div>
+          <div className="relative">
+            <div className={perfil.experiencia.length > 3 ? "max-h-[300px] overflow-y-auto pr-1 pl-3 -ml-3" : ""}>
+              <ol className="relative border-l border-ink-200 pl-5 space-y-4">
+                {perfil.experiencia.map((e: Experiencia) => (
+                  <li key={e.id} className="relative group">
+                    <span className="absolute -left-[26px] top-1.5 h-3 w-3 rounded-full border-2 border-neon group-hover:bg-neon transition-colors" style={{ background: "#161616" }} />
+                    <div className="rounded-[7px] px-2 py-1 hover:bg-white/[0.04] transition-colors">
+                      <div className="text-[10px] font-mono text-ink-500">{e.periodo}</div>
+                      <div className="font-semibold text-[14px] text-ink-900 mt-0.5">{e.cargo}</div>
+                      <div className="text-[12px] text-ink-500 mt-0.5">{e.empresa}</div>
+                      <div className="text-[12px] text-ink-600 mt-1.5 leading-snug">{e.descripcion}</div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            {perfil.experiencia.length > 3 && (
+              <div className="absolute bottom-0 inset-x-0 h-10 pointer-events-none"
+                style={{ background: "linear-gradient(to bottom, transparent, #161616)" }} />
+            )}
+          </div>
         </section>
       )}
 
-      {/* Link público */}
-      <section className="mt-2 px-5 py-6" style={{ background: "#161616" }}>
-        <div className="section-label mb-3">Mi link público</div>
-        <div className="flex items-center gap-2 rounded-[8px] p-3 font-mono text-[12px] text-ink-700 border border-ink-200" style={{ background: "#1E1E1E" }}>
-          <LinkSvg />
-          <span className="truncate flex-1 text-ink-900">perfiltic.co/{perfil.slug}</span>
-          <CopyButtonInline slug={perfil.slug} />
-        </div>
-      </section>
+      {/* Link público — solo dueño */}
+      {isOwner && (
+        <section className="mt-2 px-5 py-6" style={{ background: "#161616" }}>
+          <div className="section-label mb-3">Mi link público</div>
+          <div className="flex items-center gap-2 rounded-[8px] p-3 font-mono text-[12px] text-ink-700 border border-ink-200" style={{ background: "#1E1E1E" }}>
+            <LinkSvg />
+            <span className="truncate flex-1 text-ink-900">StartIA.co/{perfil.slug}</span>
+            <CopyButtonInline slug={perfil.slug} />
+          </div>
+        </section>
+      )}
 
       <footer className="px-5 py-5 border-t border-ink-200 text-[11px] text-ink-500 flex items-center justify-between" style={{ background: "#161616" }}>
         <Logo />
-        <span>© 2026 PerfilTIC</span>
+        <span>© 2026 StartIA</span>
       </footer>
     </div>
   );
@@ -242,39 +268,35 @@ function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwn
       </header>
 
       {/* Hero */}
-      <section className="px-10 pt-10 pb-10 border-b border-ink-200" style={{ background: "#161616" }}>
-        <div className="max-w-[1080px] mx-auto flex items-center gap-8">
-          <div className="h-28 w-28 rounded-full grid place-items-center text-white font-bold text-3xl shrink-0 overflow-hidden"
-            style={{ backgroundColor: color, boxShadow: `0 0 0 4px rgba(14,14,14,1), 0 0 0 6px ${color}40` }}>
+      <section className="px-10 pt-10 pb-8 border-b border-ink-200" style={{ background: "#161616" }}>
+        <div className="max-w-[1200px] mx-auto flex items-start gap-7">
+          <div className="h-24 w-24 rounded-full grid place-items-center text-white font-bold text-3xl shrink-0 overflow-hidden"
+            style={{ backgroundColor: color, boxShadow: `0 0 0 4px #0E0E0E, 0 0 0 6px ${color}40` }}>
             {perfil.foto ? <img src={perfil.foto} alt={perfil.nombre} className="h-full w-full object-cover" /> : initials(perfil.nombre)}
           </div>
           <div className="flex-1 min-w-0">
             {perfil.disponible && <span className="chip inline-flex mb-2">Disponible para empleo</span>}
-            <h1 className="text-[42px] font-bold leading-tight tracking-tight text-ink-900">{perfil.nombre}</h1>
-            <div className="text-[17px] text-ink-500 mt-1">{perfil.cargo}</div>
-            <div className="mt-3 flex flex-wrap gap-4 text-[12px] text-ink-500">
+            <h1 className="text-[38px] font-bold leading-tight tracking-tight text-ink-900">{perfil.nombre}</h1>
+            <div className="text-[16px] text-ink-500 mt-1">{perfil.cargo}</div>
+            <div className="mt-2.5 flex flex-wrap gap-4 text-[12px] text-ink-500">
               <span className="inline-flex items-center gap-1.5"><Pin /> {perfil.municipio}, {perfil.departamento}</span>
               <span className="inline-flex items-center gap-1.5"><Mail /> {perfil.email}</span>
               {perfil.telefono && <span className="inline-flex items-center gap-1.5"><Phone /> {perfil.telefono}</span>}
             </div>
+            {perfil.frase && <p className="mt-3 text-[14px] text-ink-600 leading-relaxed max-w-2xl">{perfil.frase}</p>}
           </div>
-          {perfil.frase && (
-            <div className="max-w-sm border-l border-ink-200 pl-8 shrink-0">
-              <div className="section-label mb-2">Sobre mí</div>
-              <p className="text-[14px] text-ink-600 leading-relaxed">{perfil.frase}</p>
-            </div>
-          )}
         </div>
       </section>
 
-      {/* Body */}
-      <div className="max-w-[1280px] mx-auto grid grid-cols-[220px_1fr_260px] gap-5 px-10 py-10 items-start">
+      {/* Body — 2 columns: wide main + right sidebar */}
+      <div className="max-w-[1200px] mx-auto grid grid-cols-[1fr_300px] gap-6 px-10 py-8 items-start">
 
-        {/* Left sidebar */}
-        <aside className="space-y-5">
+        {/* Main */}
+        <main className="space-y-5 min-w-0">
+          {/* Habilidades */}
           {perfil.habilidades.length > 0 && (
             <div className="card p-5">
-              <h2 className="section-label mb-4">Habilidades</h2>
+              <h2 className="section-label mb-4">Constelación de habilidades</h2>
               <div className="flex flex-wrap gap-2">
                 {perfil.habilidades
                   .slice()
@@ -286,19 +308,7 @@ function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwn
             </div>
           )}
 
-          {/* Link público */}
-          <div className="card p-4">
-            <div className="section-label mb-3">Mi link</div>
-            <div className="flex items-center gap-2 rounded-[8px] p-2.5 font-mono text-[11px] text-ink-700 border border-ink-200" style={{ background: "#1E1E1E" }}>
-              <LinkSvg />
-              <span className="truncate flex-1 text-ink-900">perfiltic.co/{perfil.slug}</span>
-              <CopyButtonDesktop slug={perfil.slug} />
-            </div>
-          </div>
-        </aside>
-
-        {/* Main */}
-        <main className="space-y-5 min-w-0">
+          {/* Proyectos */}
           {perfil.proyectos.length > 0 && (
             <div className="card p-6">
               <h2 className="section-label mb-5">Proyectos</h2>
@@ -321,48 +331,94 @@ function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwn
             </div>
           )}
 
+          {/* Formación */}
           {perfil.formacion.length > 0 && (
             <div className="card p-6">
-              <h2 className="section-label mb-5">Formación</h2>
-              <ol className="relative border-l border-ink-200 pl-5 space-y-5">
-                {perfil.formacion.map((f: Formacion) => (
-                  <li key={f.id} className="relative">
-                    <span className="absolute -left-[26px] top-1 h-3 w-3 rounded-full border-2 border-neon" style={{ background: "#161616" }} />
-                    <div className="text-[10px] font-mono text-ink-500">{f.anioInicio} — {f.anioFin}</div>
-                    <div className="font-semibold text-[14px] text-ink-900 mt-0.5">{f.programa}</div>
-                    <div className="text-[12px] text-ink-500">{f.institucion}</div>
-                    <div className="text-[11px] text-ink-400">{f.nivel}</div>
-                  </li>
-                ))}
-              </ol>
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="section-label">Formación</h2>
+                {perfil.formacion.length > 3 && (
+                  <span className="text-[11px] text-ink-500">{perfil.formacion.length} registros · scroll ↓</span>
+                )}
+              </div>
+              <div className="relative">
+                <div className={perfil.formacion.length > 3 ? "max-h-[300px] overflow-y-auto pr-1 pl-3 -ml-3" : ""}>
+                  <ol className="relative border-l border-ink-200 pl-5 space-y-4">
+                    {perfil.formacion.map((f: Formacion) => (
+                      <li key={f.id} className="relative group">
+                        <span className="absolute -left-[26px] top-1.5 h-3 w-3 rounded-full border-2 border-neon group-hover:bg-neon transition-colors" style={{ background: "#161616" }} />
+                        <div className="rounded-[7px] px-2 py-1.5 hover:bg-white/[0.04] transition-colors">
+                          <div className="text-[10px] font-mono text-ink-500">{f.anioInicio} — {f.anioFin}</div>
+                          <div className="font-semibold text-[14px] text-ink-900 mt-0.5 leading-snug">{f.programa}</div>
+                          <div className="text-[12px] text-ink-500 mt-0.5">{f.institucion}</div>
+                          <div className="text-[11px] text-ink-400 mt-0.5">{f.nivel}</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+                {perfil.formacion.length > 3 && (
+                  <div className="absolute bottom-0 inset-x-0 h-10 pointer-events-none"
+                    style={{ background: "linear-gradient(to bottom, transparent, #161616)" }} />
+                )}
+              </div>
             </div>
           )}
 
+          {/* Experiencia */}
           {perfil.experiencia.length > 0 && (
             <div className="card p-6">
-              <h2 className="section-label mb-5">Experiencia</h2>
-              <ol className="relative border-l border-ink-200 pl-5 space-y-5">
-                {perfil.experiencia.map((e: Experiencia) => (
-                  <li key={e.id} className="relative">
-                    <span className="absolute -left-[26px] top-1 h-3 w-3 rounded-full border-2 border-neon" style={{ background: "#161616" }} />
-                    <div className="text-[10px] font-mono text-ink-500">{e.periodo}</div>
-                    <div className="font-semibold text-[14px] text-ink-900 mt-0.5">{e.cargo}</div>
-                    <div className="text-[12px] text-ink-500">{e.empresa}</div>
-                    <div className="text-[12px] text-ink-600 mt-1 leading-snug">{e.descripcion}</div>
-                  </li>
-                ))}
-              </ol>
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="section-label">Experiencia</h2>
+                {perfil.experiencia.length > 3 && (
+                  <span className="text-[11px] text-ink-500">{perfil.experiencia.length} registros · scroll ↓</span>
+                )}
+              </div>
+              <div className="relative">
+                <div className={perfil.experiencia.length > 3 ? "max-h-[320px] overflow-y-auto pr-1 pl-3 -ml-3" : ""}>
+                  <ol className="relative border-l border-ink-200 pl-5 space-y-4">
+                    {perfil.experiencia.map((e: Experiencia) => (
+                      <li key={e.id} className="relative group">
+                        <span className="absolute -left-[26px] top-1.5 h-3 w-3 rounded-full border-2 border-neon group-hover:bg-neon transition-colors" style={{ background: "#161616" }} />
+                        <div className="rounded-[7px] px-2 py-1.5 hover:bg-white/[0.04] transition-colors">
+                          <div className="text-[10px] font-mono text-ink-500">{e.periodo}</div>
+                          <div className="font-semibold text-[14px] text-ink-900 mt-0.5">{e.cargo}</div>
+                          <div className="text-[12px] text-ink-500 mt-0.5">{e.empresa}</div>
+                          <div className="text-[12px] text-ink-600 mt-1.5 leading-snug">{e.descripcion}</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+                {perfil.experiencia.length > 3 && (
+                  <div className="absolute bottom-0 inset-x-0 h-10 pointer-events-none"
+                    style={{ background: "linear-gradient(to bottom, transparent, #161616)" }} />
+                )}
+              </div>
             </div>
           )}
         </main>
 
-        {/* Right — CV preview */}
-        <CVPreviewPanel perfilId={perfil.id} initialTemplate={perfil.cvTemplate ?? "clasica"} />
+        {/* Right sidebar */}
+        <aside className="sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto space-y-4">
+          <CVPreviewPanel perfilId={perfil.id} initialTemplate={perfil.cvTemplate ?? "clasica"} isOwner={isOwner} />
+
+          {/* Link público — solo dueño */}
+          {isOwner && (
+            <div className="card p-4">
+              <div className="section-label mb-3">Mi link público</div>
+              <div className="flex items-center gap-2 rounded-[8px] p-2.5 font-mono text-[11px] border border-ink-200" style={{ background: "#1E1E1E" }}>
+                <LinkSvg />
+                <span className="truncate flex-1 text-ink-900">StartIA.co/{perfil.slug}</span>
+                <CopyButtonDesktop slug={perfil.slug} />
+              </div>
+            </div>
+          )}
+        </aside>
       </div>
 
       <footer className="px-10 py-6 border-t border-ink-200 text-[12px] text-ink-500 flex items-center justify-between" style={{ background: "#161616" }}>
         <Logo />
-        <span>© 2026 PerfilTIC · Iniciativa de inclusión digital · Colombia</span>
+        <span>© 2026 StartIA · Iniciativa de inclusión digital · Colombia</span>
       </footer>
     </div>
   );

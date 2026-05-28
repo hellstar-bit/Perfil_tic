@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { registro } from "@/lib/actions/auth";
+import { Logo } from "@/components/Logo";
 
 export default function RegistroPage() {
   const [state, action, pending] = useActionState(registro, undefined);
@@ -12,14 +13,7 @@ export default function RegistroPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <span className="inline-flex items-center gap-2">
-            <div className="h-9 w-9 rounded-[8px] bg-neon grid place-items-center text-noir">
-              <svg viewBox="0 0 24 24" width="55%" height="55%" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 19V5h7a4 4 0 0 1 0 8H5"/>
-              </svg>
-            </div>
-            <span className="text-xl font-bold text-ink-900">Perfil<span className="text-neon">TIC</span></span>
-          </span>
+          <Logo size="xl" />
         </div>
 
         <div className="card p-8">
