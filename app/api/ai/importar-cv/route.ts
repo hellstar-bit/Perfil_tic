@@ -49,7 +49,20 @@ function extraerJSON(texto: string): Record<string, unknown> {
   const inicio = limpio.indexOf("{");
   const fin = limpio.lastIndexOf("}");
   if (inicio === -1 || fin === -1) return {};
-  return JSON.parse(limpio.slice(inicio, fin + 1)) as Record<string, unknown>;
+  try {
+    return JSON.parse(limpio.slice(inicio, fin + 1)) as Record<string, unknown>;
+  } catch {
+    // JSON truncado: intentar reparar buscando el último } válido
+    const fragmento = limpio.slice(inicio);
+    for (let i = fragmento.length - 1; i >= 0; i--) {
+      if (fragmento[i] === "}") {
+        try {
+          return JSON.parse(fragmento.slice(0, i + 1)) as Record<string, unknown>;
+        } catch { continue; }
+      }
+    }
+    return {};
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,13 +156,14 @@ export async function POST(req: NextRequest) {
         { role: "system", content: PROMPT },
         { role: "user", content: `${contexto}\n\nHoja de vida:\n\n${texto}` },
       ],
-      maxTokens: 2000,
+      maxTokens: 4096,
     });
 
     const raw = (chat.choices?.[0]?.message?.content as string) ?? "{}";
     const datos = extraerJSON(raw);
     return NextResponse.json(normalizar(datos));
   } catch (error) {
+    console.error("[importar-cv] error:", error);
     return handleMistralError(error);
   }
 }

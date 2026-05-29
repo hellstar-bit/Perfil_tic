@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+﻿import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { PerfilData } from "../shared/pdfTypes";
 import { NIVEL_LABEL, getIniciales, parseTag } from "../shared/pdfUtils";
 
@@ -78,7 +78,7 @@ export function TechTemplate({ perfil }: { perfil: PerfilData }) {
           <View style={s.contactRow}><Text style={s.contactTx}>{perfil.email}</Text></View>
           {!!perfil.telefono && <View style={s.contactRow}><Text style={s.contactTx}>{perfil.telefono}</Text></View>}
           <View style={s.contactRow}><Text style={s.contactTx}>{perfil.municipio}, {perfil.departamento}</Text></View>
-          <View style={s.contactRow}><Text style={s.contactTx}>StartIA.co/{perfil.slug}</Text></View>
+          <View style={s.contactRow}><Text style={s.contactTx}>AscendIA.co/{perfil.slug}</Text></View>
 
           {perfil.habilidades.length > 0 && (
             <View>
@@ -104,7 +104,7 @@ export function TechTemplate({ perfil }: { perfil: PerfilData }) {
           </View>
 
           <View style={s.footer}>
-            <Text style={s.footerTx}>Generado por StartIA  ·  StartIA.co/{perfil.slug}</Text>
+            <Text style={s.footerTx}>Generado por AscendIA  ·  AscendIA.co/{perfil.slug}</Text>
           </View>
         </View>
 

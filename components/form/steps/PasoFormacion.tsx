@@ -172,7 +172,7 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
     ? INSTITUCIONES.filter((i) => i.toLowerCase().includes(campos.institucion.toLowerCase())).slice(0, 5)
     : INSTITUCIONES.slice(0, 5);
 
-  const maximo = items.length >= 6 && editandoId === null;
+  const maximo = false;
   const mode = editandoId ? "edit" : "new";
   const editandoItem = items.find((f) => f.id === editandoId);
 
@@ -256,11 +256,6 @@ export function PasoFormacion({ formaciones, onChange, onNext, onBack, onSalir }
               </div>
             )}
 
-            {maximo && (
-              <div className="mb-4 p-3 rounded-[8px] bg-amber-50 border border-amber-200 text-[13px] text-amber-800">
-                Alcanzaste el máximo de 6 formaciones.
-              </div>
-            )}
 
             <fieldset disabled={maximo} className="space-y-4 disabled:opacity-60">
               <div>

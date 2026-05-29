@@ -1,4 +1,4 @@
-export function Logo({ size = "md" }: { size?: "md" | "lg" | "xl" }) {
+﻿export function Logo({ size = "md" }: { size?: "md" | "lg" | "xl" }) {
   const dim = size === "md" ? 28 : 36;
   const textCls =
     size === "xl"
@@ -6,9 +6,9 @@ export function Logo({ size = "md" }: { size?: "md" | "lg" | "xl" }) {
       : "text-[15px] font-semibold text-ink-900 tracking-tight";
   return (
     <span className="inline-flex items-center gap-2">
-      <img src="/logo.svg" width={dim} height={dim} alt="StartIA" />
+      <img src="/logo.svg" width={dim} height={dim} alt="AscendIA" />
       <span className={textCls}>
-        Start<span className="text-neon">IA</span>
+        Ascend<span className="text-neon">IA</span>
       </span>
     </span>
   );

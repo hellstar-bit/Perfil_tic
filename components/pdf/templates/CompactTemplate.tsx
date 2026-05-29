@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+﻿import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { PerfilData } from "../shared/pdfTypes";
 import { NIVEL_LABEL, parseTag } from "../shared/pdfUtils";
 
@@ -48,7 +48,7 @@ export function CompactTemplate({ perfil }: { perfil: PerfilData }) {
     perfil.email,
     perfil.telefono,
     `${perfil.municipio}, ${perfil.departamento}`,
-    `StartIA.co/${perfil.slug}`,
+    `AscendIA.co/${perfil.slug}`,
   ].filter(Boolean).join("  ·  ");
 
   const skillsText = perfil.habilidades

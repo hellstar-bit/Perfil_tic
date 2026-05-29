@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useReducer, useState, useEffect, useRef } from "react";
 import { Logo } from "@/components/Logo";
@@ -48,7 +48,7 @@ const INITIAL: State = {
   habilidades: [], formaciones: [], proyectos: [], experiencias: [],
 };
 
-const STORAGE_KEY = "StartIA-draft";
+const STORAGE_KEY = "AscendIA-draft";
 
 function reducer(state: State, action: Action): State {
   if (action.type === "RESET") return INITIAL;

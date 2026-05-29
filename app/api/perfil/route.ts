@@ -11,18 +11,18 @@ const habilidadSchema = z.object({
 const formacionSchema = z.object({
   id: z.string().optional(),
   nombre: z.string().min(1),
-  institucion: z.string().min(1),
-  nivel: z.string().min(1),
-  inicio: z.string().min(1),
-  fin: z.string().min(1),
+  institucion: z.string().default(""),
+  nivel: z.string().default(""),
+  inicio: z.string().default(""),
+  fin: z.string().default(""),
   cert: z.string().optional().default(""),
 });
 
 const proyectoSchema = z.object({
   id: z.string().optional(),
   nombre: z.string().min(1),
-  descripcion: z.string().min(1),
-  tipo: z.string().min(1),
+  descripcion: z.string().default(""),
+  tipo: z.string().default(""),
   tecnologias: z.array(z.string()).default([]),
   url: z.string().optional().default(""),
   imagen: z.string().optional().default(""),
@@ -33,12 +33,12 @@ const proyectoSchema = z.object({
 const experienciaSchema = z.object({
   id: z.string().optional(),
   cargo: z.string().min(1),
-  empresa: z.string().min(1),
-  tipo: z.string().min(1),
+  empresa: z.string().default(""),
+  tipo: z.string().default("empleo"),
   emoji: z.string().optional().default(""),
-  inicio: z.string().min(1),
-  fin: z.string().min(1),
-  descripcion: z.string().min(1),
+  inicio: z.string().default(""),
+  fin: z.string().default(""),
+  descripcion: z.string().default(""),
 });
 
 const perfilSchema = z.object({

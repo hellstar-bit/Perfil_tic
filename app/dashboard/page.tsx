@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+﻿import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -36,7 +36,7 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold text-ink-900 mb-1">
           Hola, {session.user.name?.split(" ")[0] ?? "bienvenido"}
         </h1>
-        <p className="text-muted mb-8">Este es tu espacio en StartIA.</p>
+        <p className="text-muted mb-8">Este es tu espacio en AscendIA.</p>
 
         {perfil ? (
           <div className="card p-6 max-w-lg">

@@ -227,7 +227,7 @@ function PerfilMobile({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwne
           <div className="section-label mb-3">Mi link público</div>
           <div className="flex items-center gap-2 rounded-[8px] p-3 font-mono text-[12px] text-ink-700 border border-ink-200" style={{ background: "#1E1E1E" }}>
             <LinkSvg />
-            <span className="truncate flex-1 text-ink-900">StartIA.co/{perfil.slug}</span>
+            <span className="truncate flex-1 text-ink-900">AscendIA.co/{perfil.slug}</span>
             <CopyButtonInline slug={perfil.slug} />
           </div>
         </section>
@@ -235,7 +235,7 @@ function PerfilMobile({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwne
 
       <footer className="px-5 py-5 border-t border-ink-200 text-[11px] text-ink-500 flex items-center justify-between" style={{ background: "#161616" }}>
         <Logo />
-        <span>© 2026 StartIA</span>
+        <span>© 2026 AscendIA</span>
       </footer>
     </div>
   );
@@ -408,7 +408,7 @@ function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwn
               <div className="section-label mb-3">Mi link público</div>
               <div className="flex items-center gap-2 rounded-[8px] p-2.5 font-mono text-[11px] border border-ink-200" style={{ background: "#1E1E1E" }}>
                 <LinkSvg />
-                <span className="truncate flex-1 text-ink-900">StartIA.co/{perfil.slug}</span>
+                <span className="truncate flex-1 text-ink-900">AscendIA.co/{perfil.slug}</span>
                 <CopyButtonDesktop slug={perfil.slug} />
               </div>
             </div>
@@ -418,7 +418,7 @@ function PerfilDesktop({ perfil, isOwner }: { perfil: NonNullable<Perfil>; isOwn
 
       <footer className="px-10 py-6 border-t border-ink-200 text-[12px] text-ink-500 flex items-center justify-between" style={{ background: "#161616" }}>
         <Logo />
-        <span>© 2026 StartIA · Iniciativa de inclusión digital · Colombia</span>
+        <span>© 2026 AscendIA · Iniciativa de inclusión digital · Colombia</span>
       </footer>
     </div>
   );

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Syne, DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -24,7 +24,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StartIA — Tu perfil profesional en el sector TIC",
+  title: "AscendIA — Tu perfil profesional en el sector TIC",
   description: "Crea tu perfil digital profesional para el sector tecnológico colombiano. Gratis, en 7 minutos.",
 };
 

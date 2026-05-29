@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { prisma } from "@/lib/prisma";
 import { CVMockupAnimated } from "@/components/landing/CVMockupAnimated";
@@ -28,7 +28,7 @@ const PASOS = [
 const HERRAMIENTAS = [
   { i: <DocIcon />, n: "01", t: "Hoja de vida", d: "CV en PDF generado automático. Formato A4 limpio, listo para imprimir o adjuntar. Se actualiza solo cada vez que editas tu perfil." },
   { i: <FolderIcon />, n: "02", t: "Portafolio", d: "Página web con tus proyectos. Cada proyecto con descripción, tecnologías, enlace y tipo." },
-  { i: <LinkIcon />, n: "03", t: "Link único", d: "Una URL para compartir todo. StartIA.co/tu-nombre. WhatsApp, correo, hojas físicas — donde haga falta." },
+  { i: <LinkIcon />, n: "03", t: "Link único", d: "Una URL para compartir todo. AscendIA.co/tu-nombre. WhatsApp, correo, hojas físicas — donde haga falta." },
 ];
 
 /* ══════════════════════════════════════════
@@ -52,7 +52,7 @@ function LandingMobile({ perfiles, proyectos }: { perfiles: number; proyectos: n
         </div>
         <HeroTitle mobile />
         <p className="mt-4 text-[14px] leading-relaxed text-ink-500">
-          StartIA convierte lo que sabes — proyectos del SENA, freelances, soporte, autodidacta — en un perfil digital que reclutadores del sector tecnológico pueden encontrar, descargar y compartir.
+          AscendIA convierte lo que sabes — proyectos del SENA, freelances, soporte, autodidacta — en un perfil digital que reclutadores del sector tecnológico pueden encontrar, descargar y compartir.
         </p>
         <Link href="/registro" className="mt-6 w-full h-12 rounded-[8px] bg-neon text-noir font-semibold text-[15px] flex items-center justify-center gap-2 active:brightness-90 transition-all">
           Crear mi perfil <Arrow />
@@ -146,7 +146,7 @@ function LandingMobile({ perfiles, proyectos }: { perfiles: number; proyectos: n
         <div className="mt-4 flex items-center justify-between">
           <a href="#como-funciona" className="hover:text-ink-700">Cómo funciona</a>
           <a href="#ia" className="hover:text-ink-700">IA integrada</a>
-          <span>© 2026 StartIA</span>
+          <span>© 2026 AscendIA</span>
         </div>
       </footer>
     </div>
@@ -182,7 +182,7 @@ function LandingDesktop({ perfiles, proyectos }: { perfiles: number; proyectos: 
           </div>
           <HeroTitle />
           <p className="mt-6 max-w-lg text-[16px] leading-relaxed text-ink-500">
-            StartIA convierte lo que sabes — proyectos del SENA, freelances, soporte, autodidacta — en un perfil digital que reclutadores del sector tecnológico pueden encontrar, descargar y compartir.
+            AscendIA convierte lo que sabes — proyectos del SENA, freelances, soporte, autodidacta — en un perfil digital que reclutadores del sector tecnológico pueden encontrar, descargar y compartir.
           </p>
           <div className="mt-8 flex items-center gap-3">
             <Link href="/registro" className="h-12 px-7 rounded-[8px] bg-neon text-noir font-bold text-[15px] flex items-center gap-2 hover:brightness-90 transition-all">
@@ -318,7 +318,7 @@ function LandingDesktop({ perfiles, proyectos }: { perfiles: number; proyectos: 
               <p className="mt-3 text-[13px] text-ink-500 leading-relaxed max-w-xs">
                 Iniciativa de inclusión digital para jóvenes vulnerables del sector TIC. Colombia 2026—2030.
               </p>
-              <p className="mt-2 text-[12px] text-ink-400 font-mono">StartIA.co</p>
+              <p className="mt-2 text-[12px] text-ink-400 font-mono">AscendIA.co</p>
             </div>
             <div>
               <div className="text-[10px] uppercase tracking-wider text-ink-500 mb-3">Producto</div>
@@ -338,7 +338,7 @@ function LandingDesktop({ perfiles, proyectos }: { perfiles: number; proyectos: 
             </div>
           </div>
           <div className="mt-8 pt-6 border-t border-ink-200 flex items-center justify-between text-[11px] text-ink-500">
-            <span>© 2026 StartIA</span>
+            <span>© 2026 AscendIA</span>
             <span>Colombia 2026—2030</span>
           </div>
         </div>

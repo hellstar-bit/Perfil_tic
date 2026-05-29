@@ -204,8 +204,8 @@ export function Step3Formacion({
   const [form, setForm] = useState<FormState>(BLANK);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
 
-  const maximo = formaciones.length >= 6;
-  const disabled = maximo && form.editandoId === null;
+  const maximo = false;
+  const disabled = false;
   const urlValida = form.urlCert ? isValidUrl(form.urlCert) : null;
 
   const set = (k: keyof Omit<FormState, "errores" | "editandoId">, v: string) =>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import type { Experiencia } from "@/types/perfil";
@@ -183,7 +183,7 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
   };
 
   const charCount = campos.descripcion.length;
-  const maximo = items.length >= 6 && editandoId === null;
+  const maximo = false;
   const mode = editandoId ? "edit" : "new";
   const editandoItem = items.find((ex) => ex.id === editandoId);
 
@@ -200,7 +200,7 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
           <div className="rounded-[10px] bg-brand-50 p-4 flex gap-3 mb-6" style={{ border: "1px solid rgba(0,229,160,0.15)" }}>
             <div className="text-neon shrink-0 mt-0.5"><Icons.Sparkle /></div>
             <div className="text-[13px] text-ink-700 leading-relaxed">
-              <b className="text-neon font-semibold">La experiencia informal también cuenta.</b> Los reclutadores de StartIA valoran el trabajo comunitario, las prácticas y los proyectos propios igual que un empleo formal.
+              <b className="text-neon font-semibold">La experiencia informal también cuenta.</b> Los reclutadores de AscendIA valoran el trabajo comunitario, las prácticas y los proyectos propios igual que un empleo formal.
             </div>
           </div>
 
@@ -279,11 +279,6 @@ export function PasoExperiencia({ experiencias, onChange, onNext, onBack, onSali
                 </div>
               )}
 
-              {maximo && (
-                <div className="mb-4 p-3 rounded-[8px] bg-amber-50 border border-amber-200 text-[13px] text-amber-800">
-                  Alcanzaste el máximo de 6 experiencias.
-                </div>
-              )}
 
               <fieldset disabled={maximo} className="space-y-4 disabled:opacity-60">
                 <div>

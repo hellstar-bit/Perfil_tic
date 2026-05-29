@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+﻿import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { PerfilData } from "../shared/pdfTypes";
 import { NIVEL_LABEL, getIniciales, parseTag } from "../shared/pdfUtils";
 
@@ -91,7 +91,7 @@ export function CreativeTemplate({ perfil }: { perfil: PerfilData }) {
           </View>
           <Text style={s.sName}>{perfil.nombre}</Text>
           <Text style={s.sCargo}>{perfil.cargo}</Text>
-          <Text style={s.sUrl}>StartIA.co/{perfil.slug}</Text>
+          <Text style={s.sUrl}>AscendIA.co/{perfil.slug}</Text>
 
           <Text style={s.sHead}>CONTACTO</Text>
           <View style={s.contactRow}><Text style={s.contactTx}>{perfil.email}</Text></View>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 export function handleMistralError(error: unknown): NextResponse {
+  console.error("[mistral]", error instanceof Error ? error.message : error);
   if (error instanceof Error) {
     if (error.message.includes("rate_limit")) {
       return NextResponse.json(

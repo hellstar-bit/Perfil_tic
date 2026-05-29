@@ -172,7 +172,7 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
   };
 
   const charCount = campos.descripcion.length;
-  const maximo = items.length >= 6 && editandoId === null;
+  const maximo = false;
   const mode = editandoId ? "edit" : "new";
   const editandoItem = items.find((p) => p.id === editandoId);
   const techsRestantes = TECHS_DISPLAY.filter((t) => !campos.tecnologias.includes(t));
@@ -257,11 +257,6 @@ export function PasoProyectos({ proyectos, onChange, onNext, onBack, onSalir }: 
               </div>
             )}
 
-            {maximo && (
-              <div className="mb-4 p-3 rounded-[8px] bg-amber-50 border border-amber-200 text-[13px] text-amber-800">
-                Alcanzaste el máximo de 6 proyectos.
-              </div>
-            )}
 
             <fieldset disabled={maximo} className="space-y-4 disabled:opacity-60">
               <div>
